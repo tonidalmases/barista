@@ -1,5 +1,61 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Update 7.0.0 Template replacements should migrate the DtChartSeries to the highcharts types 1`] = `
+"import { Component, ViewEncapsulation } from '@angular/core';
+    import {
+      DtChartSeries,
+      DtChartOptions,
+    } from '@dynatrace/barista-components/chart';
+
+    @Component({
+      selector: 'dt-e2e-pie-chart',
+      templateUrl: 'pie-chart.html',
+      encapsulation: ViewEncapsulation.None,
+    })
+    export class PieChart {
+      pieOptions: DtChartOptions = {
+        chart: {
+          type: 'pie',
+        },
+        legend: {
+          align: 'right',
+          borderWidth: 0,
+          enabled: true,
+          layout: 'vertical',
+          symbolRadius: 0,
+          verticalAlign: 'middle',
+          floating: true,
+        },
+        plotOptions: {
+          pie: {
+            showInLegend: true,
+          },
+        },
+      };
+
+      pieSeries: DtChartSeries[] = [
+        {
+          name: 'Browsers',
+          data: [
+            {
+              name: 'Chrome',
+              y: 55,
+            },
+            {
+              name: 'Firefox',
+              y: 25,
+            },
+            {
+              name: 'Edge',
+              y: 15,
+            },
+          ],
+        },
+      ];
+    }
+    "
+`;
+
 exports[`Update 7.0.0 Template replacements should migrate the breadcrumbs-item selector to a plain anchor 1`] = `
 "<dt-breadcrumbs [attr.aria-label]=\\"Breadcrumbs navigation\\" i18n-aria-label>
   <a dtBreadcrumbsItem i18n>Security</a>

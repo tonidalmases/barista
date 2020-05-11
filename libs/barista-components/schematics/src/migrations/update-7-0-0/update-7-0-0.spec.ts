@@ -26,7 +26,10 @@ describe('Update 7.0.0', () => {
   let schematicRunner: SchematicTestRunner;
 
   beforeEach(async () => {
-    initialTree = createEmptyWorkspace(Tree.empty());
+    initialTree = Tree.merge(
+      createEmptyWorkspace(Tree.empty()),
+      addTestFiles(),
+    );
 
     schematicRunner = new SchematicTestRunner(
       '@dynatrace/barista-components/schematics',
@@ -117,12 +120,16 @@ describe('Update 7.0.0', () => {
         'should migrate the table empty state to the empty state component with directive on the message',
       fileName: 'libs/feature-a/src/lib/table-empty-state.html',
     },
+    {
+      description: 'should migrate the DtChartSeries to the highcharts types',
+      fileName: 'libs/feature-a/src/lib/highcharts.ts',
+    },
   ];
 
   describe('Template replacements', () => {
     templateReplacements.forEach(({ description, fileName }) => {
       it(description, async () => {
-        initialTree = Tree.merge(initialTree, addHTMLFiles());
+        initialTree = Tree.merge(initialTree, addTestFiles());
         const result = await schematicRunner
           .runSchematicAsync('update-7-0-0', {}, initialTree)
           .toPromise();
@@ -134,7 +141,7 @@ describe('Update 7.0.0', () => {
   });
 });
 
-function addHTMLFiles(): Tree {
+function addTestFiles(): Tree {
   const tree = Tree.empty();
   tree.create(
     'libs/feature-a/src/lib/component-a/component-a.html',
@@ -195,6 +202,63 @@ function addHTMLFiles(): Tree {
       <dt-table-empty-state-message i18n *ngIf="(filtersApplied$ | async)">Amend the timeframe you're querying within or review your query to make your statement less restrictive</dt-table-empty-state-message>
     </dt-table-empty-state>
   </div>`,
+  );
+
+  tree.create(
+    'libs/feature-a/src/lib/highcharts.ts',
+    `import { Component, ViewEncapsulation } from '@angular/core';
+    import {
+      DtChartSeries,
+      DtChartOptions,
+    } from '@dynatrace/barista-components/chart';
+
+    @Component({
+      selector: 'dt-e2e-pie-chart',
+      templateUrl: 'pie-chart.html',
+      encapsulation: ViewEncapsulation.None,
+    })
+    export class PieChart {
+      pieOptions: DtChartOptions = {
+        chart: {
+          type: 'pie',
+        },
+        legend: {
+          align: 'right',
+          borderWidth: 0,
+          enabled: true,
+          layout: 'vertical',
+          symbolRadius: 0,
+          verticalAlign: 'middle',
+          floating: true,
+        },
+        plotOptions: {
+          pie: {
+            showInLegend: true,
+          },
+        },
+      };
+
+      pieSeries: DtChartSeries[] = [
+        {
+          name: 'Browsers',
+          data: [
+            {
+              name: 'Chrome',
+              y: 55,
+            },
+            {
+              name: 'Firefox',
+              y: 25,
+            },
+            {
+              name: 'Edge',
+              y: 15,
+            },
+          ],
+        },
+      ];
+    }
+    `,
   );
 
   return tree;

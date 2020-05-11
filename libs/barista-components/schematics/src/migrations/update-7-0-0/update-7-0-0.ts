@@ -20,9 +20,14 @@ import {
   SchematicContext,
   Tree,
 } from '@angular-devkit/schematics';
-import { updateDependenciesRule, templateReplacementRule } from './rules';
-import { installPackagesRule } from '../../utils';
+import { updateDependenciesRule, replacementRule } from './rules';
+import {
+  installPackagesRule,
+  readJsonFromTree,
+  getMatchingFilesFromTree,
+} from '../../utils';
 import { TEMPLATE_REPLACEMENTS } from './config/template-replacements';
+import * as ts from 'typescript';
 
 /**
  * @internal
@@ -30,9 +35,44 @@ import { TEMPLATE_REPLACEMENTS } from './config/template-replacements';
  */
 export default function (): Rule {
   return (tree: Tree, context: SchematicContext) => {
+    const tsconfig = readJsonFromTree(tree, 'tsconfig.json');
+    console.log(tsconfig);
+
+    const fileNames = Array.from(
+      getMatchingFilesFromTree(tree, (filePath) => filePath.endsWith('.ts')),
+    );
+
+    const program = ts.createProgram(fileNames, ts.getDefaultCompilerOptions());
+
     const rule = chain([
       updateDependenciesRule(),
-      templateReplacementRule(TEMPLATE_REPLACEMENTS),
+      replacementRule({
+        replacements: TEMPLATE_REPLACEMENTS,
+        fileType: '.html',
+      }),
+      replacementRule<ts.SourceFile>({
+        replacements: [
+          {
+            needle: 'DtChartSeries',
+            replacement: (content) => {
+              console.log('REPLACER: ', content.fileName);
+              return '';
+            },
+          },
+        ],
+        fileType: '.ts',
+        filePreprocessor: (filePath) => {
+          const sourceFiles = program.getSourceFiles();
+          const file = sourceFiles.find(
+            ({ fileName }) => fileName === filePath,
+          );
+
+          console.log(file);
+
+          console.log(sourceFiles.map(({ fileName }) => fileName));
+          return undefined;
+        },
+      }),
       installPackagesRule(),
     ]);
 

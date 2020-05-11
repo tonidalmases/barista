@@ -15,7 +15,4 @@
  */
 
 export { updateDependenciesRule } from './update-dependencies.rule';
-export {
-  templateReplacementRule,
-  TemplateReplacementList,
-} from './template-replacement.rule';
+export { replacementRule, ReplacementList } from './replacement.rule';
