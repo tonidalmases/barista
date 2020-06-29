@@ -1,0 +1,44 @@
+@import '../../style/font-mixins';
+@import '../../core/src/style/form-control';
+
+:host {
+  display: flex;
+  width: 100%;
+  @include dt-main-font();
+  @include dt-form-control();
+}
+
+.dt-timeinput-input {
+  display: block;
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 100%;
+
+  input {
+    display: block;
+    width: 100%;
+    height: 100%;
+    @include dt-main-font();
+    appearance: none;
+    outline: none;
+    border: 0;
+    border-radius: 0;
+    text-align: center;
+  }
+}
+
+.dt-timeinput-input::-webkit-inner-spin-button,
+.dt-timeinput-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+.dt-timeinput-separator {
+  display: block;
+  text-align: center;
+  flex-grow: 0;
+  flex-shrink: 0;
+  padding: 0 4px;
+}

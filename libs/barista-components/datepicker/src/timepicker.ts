@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
-export * from './src/common-behaviours/index';
-export * from './src/error/index';
-export * from './src/util/index';
-export * from './src/logger/index';
-export * from './src/viewport/index';
-export * from './src/option/index';
-export * from './src/tree/index';
-export * from './src/animations/index';
-export * from './src/overlay/index';
-export * from './src/testing/index';
-export * from './src/date/index';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ViewEncapsulation,
+} from '@angular/core';
+
+@Component({
+  selector: 'dt-timepicker',
+  templateUrl: 'timepicker.html',
+  styleUrls: ['timepicker.scss'],
+  host: {
+    class: 'dt-timepicker',
+  },
+  encapsulation: ViewEncapsulation.Emulated,
+  preserveWhitespaces: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class DtTimepicker {}
