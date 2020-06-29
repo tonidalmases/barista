@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-export * from './src/common-behaviours/index';
-export * from './src/error/index';
-export * from './src/util/index';
-export * from './src/logger/index';
-export * from './src/viewport/index';
-export * from './src/option/index';
-export * from './src/tree/index';
-export * from './src/animations/index';
-export * from './src/overlay/index';
-export * from './src/testing/index';
-export * from './src/date/index';
+export * from './src/calendar-body';
+export * from './src/calendar';
+export * from './src/timeinput';
+export * from './src/timepicker';
+export * from './src/timepicker';
+export * from './src/datepicker';
+export * from './src/datepicker-module';

@@ -1,0 +1,22 @@
+<div class="dt-timepicker-part">
+  <!-- Replace false with isTimeRangeEnabled when range mode is supported -->
+  <div *ngIf="false">
+    <div class="dt-timepicker-date-label">{{ valueLabel }}</div>
+  </div>
+
+  <dt-timeinput
+    [disabled]="disabled"
+    [hour]="hour"
+    [minute]="minute"
+  ></dt-timeinput>
+</div>
+
+<!-- Replace false with isTimeRangeEnabled when range mode is supported -->
+<div *ngIf="false">
+  <div class="dt-timepicker-separator">to</div>
+
+  <div class="dt-timepicker-part">
+    <div class="dt-timepicker-date-label">{{ valueLabel }}</div>
+    <dt-timeinput [disabled]="disabled"></dt-timeinput>
+  </div>
+</div>

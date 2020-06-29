@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-export * from './src/common-behaviours/index';
-export * from './src/error/index';
-export * from './src/util/index';
-export * from './src/logger/index';
-export * from './src/viewport/index';
-export * from './src/option/index';
-export * from './src/tree/index';
-export * from './src/animations/index';
-export * from './src/overlay/index';
-export * from './src/testing/index';
-export * from './src/date/index';
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'dt-example-datepicker-dark',
+  templateUrl: 'datepicker-dark-example.html',
+  styleUrls: ['datepicker-dark-example.scss'],
+})
+export class DtExampleDatepickerDark {
+  startAt = new Date(2020, 7, 31);
+  isDatepickerDisabled = false;
+  isTimepickerDisabled = false;
+  isDatepickerTimeEnabled = true;
+}

@@ -1444,6 +1444,39 @@
       },
       "schematics": {}
     },
+    "datepicker": {
+      "projectType": "library",
+      "root": "libs/barista-components/experimental/datepicker",
+      "sourceRoot": "libs/barista-components/experimental/datepicker/src",
+      "prefix": "dt",
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/barista-components/experimental/datepicker/tsconfig.lib.json",
+              "libs/barista-components/experimental/datepicker/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!libs/barista-components/experimantal/datepicker/**"
+            ]
+          }
+        },
+        "lint-styles": {
+          "builder": "./dist/libs/workspace:stylelint",
+          "options": {
+            "stylelintConfig": ".stylelintrc",
+            "reportFile": "dist/stylelint/report.xml",
+            "exclude": ["**/node_modules/**"],
+            "files": [
+              "libs/barista-components/experimental/datepicker/**/*.scss"
+            ]
+          }
+        }
+      },
+      "schematics": {}
+    },
     "drawer": {
       "projectType": "library",
       "root": "libs/barista-components/drawer",
