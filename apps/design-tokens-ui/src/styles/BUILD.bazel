@@ -1,0 +1,23 @@
+load("@io_bazel_rules_sass//:defs.bzl", "sass_library")
+
+package(default_visibility = ["//apps/design-tokens-ui/src:__subpackages__"])
+
+sass_library(
+    name = "variables",
+    srcs = [
+        "variables.scss",
+        "//libs/shared/design-tokens:build",
+    ],
+)
+
+sass_library(
+    name = "styles",
+    srcs = [
+        "fonts.scss",
+        "input.scss",
+        "link.scss",
+        "overrides/checkbox.scss",
+        "overrides/select.scss",
+    ],
+    deps = [":variables"],
+)

@@ -37,7 +37,7 @@ import {
   NavLogoDirective,
 } from './components/nav/nav.component';
 
-import '@dynatrace/fluid-elements/button';
+// import '@dynatrace/fluid-elements/button';
 
 @NgModule({
   declarations: [

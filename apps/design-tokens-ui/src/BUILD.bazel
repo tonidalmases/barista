@@ -1,0 +1,57 @@
+load("//tools/bazel_rules:index.bzl", "ng_module")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("@npm//@bazel/typescript:index.bzl", "ts_devserver")
+
+package(default_visibility = ["//apps/design-tokens-ui:__subpackages__"])
+
+# Root paths that are used to serve files from for the pkg_web and the
+# ts_devserver files from this roots can be requested via /...
+_root_paths = [
+    "npm/node_modules",
+    # "npm/node_modules/@dynatrace",
+    "npm/node_modules/@dynatrace/barista-fonts",
+]
+
+sass_binary(
+    name = "styles",
+    src = "styles.scss",
+    output_name = "styles.css",
+    deps = ["//apps/design-tokens-ui/src/styles"],
+)
+
+ng_module(
+    name = "src",
+    srcs = [
+        "main.dev.ts",
+        "main.prod.ts",
+        "polyfills.ts",
+    ],
+    tsconfig = "//apps/design-tokens-ui:tsconfig_app",
+    deps = [
+        "//apps/design-tokens-ui/src/app",
+        "@npm//@angular/core",
+        "@npm//@angular/platform-browser",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    additional_root_paths = _root_paths,
+    entry_module = "dynatrace/apps/design-tokens-ui/src/main.dev",
+    port = 4200,
+    scripts = [
+        "@npm//:node_modules/tslib/tslib.js",
+        "//tools/bazel_rules/dev_server:rxjs_umd_modules",
+    ],
+    serving_path = "/bundle.js",
+    static_files = [
+        ":index.html",
+        ":styles.css",
+        "@npm//:node_modules/zone.js/dist/zone.min.js",
+    ],
+    deps = [
+        ":src",
+        "@npm//@dynatrace/barista-fonts",
+        "@npm//@dynatrace/barista-icons",
+    ],
+)

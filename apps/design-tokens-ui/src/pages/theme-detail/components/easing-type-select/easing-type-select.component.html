@@ -1,5 +1,5 @@
 <div class="design-tokens-ui-setting design-tokens-ui-select-setting">
-  <label class="design-tokens-ui-settings-label" i18n>Easing:</label>
+  <label class="design-tokens-ui-settings-label">Easing:</label>
   <dt-select
     [ngModel]="_customExponent ? 'custom' : _presetType"
     (ngModelChange)="_presetType = $event"
@@ -23,7 +23,7 @@
   class="design-tokens-ui-setting design-tokens-ui-labelled-input"
   *ngIf="_customExponent"
 >
-  <label class="design-tokens-ui-settings-label" i18n>Exponent:</label>
+  <label class="design-tokens-ui-settings-label">Exponent:</label>
 
   <input
     type="text"

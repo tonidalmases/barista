@@ -1,0 +1,16 @@
+load("//tools/bazel_rules:index.bzl", "ng_module")
+
+package(default_visibility = ["//apps/design-tokens-ui/src:__subpackages__"])
+
+ng_module(
+    name = "app-theme",
+    srcs = glob(["*.ts"]),
+    tsconfig = "//apps/design-tokens-ui:tsconfig_app",
+    deps = [
+        "//apps/design-tokens-ui/src/utils",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//@angular/router",
+        "@npm//rxjs",
+    ],
+)

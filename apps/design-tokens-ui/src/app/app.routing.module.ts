@@ -18,13 +18,13 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
-  {
-    path: 'theme',
-    loadChildren: () =>
-      import('../pages/themes/themes.module').then(
-        (module) => module.ThemesModule,
-      ),
-  },
+  // {
+  //   path: 'theme',
+  //   loadChildren: () =>
+  //     import('../pages/themes/themes.module').then(
+  //       (module) => module.ThemesModule,
+  //     ),
+  // },
   {
     path: 'spacing',
     loadChildren: () =>
@@ -32,11 +32,11 @@ const routes: Routes = [
         (module) => module.SpacingsModule,
       ),
   },
-  {
-    path: '',
-    redirectTo: 'theme',
-    pathMatch: 'full',
-  },
+  // {
+  //   path: '',
+  //   redirectTo: 'theme',
+  //   pathMatch: 'full',
+  // },
 ];
 
 @NgModule({

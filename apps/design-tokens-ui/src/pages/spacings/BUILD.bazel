@@ -1,0 +1,33 @@
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//tools/bazel_rules:index.bzl", "ng_module")
+
+package(default_visibility = ["//apps/design-tokens-ui/src:__subpackages__"])
+
+ng_module(
+    name = "spacings",
+    srcs = glob(
+        include = ["*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+    angular_assets = [
+        ":styles",
+        ":spacings.component.html",
+    ],
+    tsconfig = "//apps/design-tokens-ui:tsconfig_app",
+    deps = [
+        "//apps/design-tokens-ui/src/pipes",
+        "//apps/design-tokens-ui/src/services/spacing",
+        "//libs/design-tokens-ui/input",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//@angular/forms",
+        "@npm//@angular/router",
+        "@npm//rxjs",
+    ],
+)
+
+sass_binary(
+    name = "styles",
+    src = ":spacings.component.scss",
+    deps = ["//apps/design-tokens-ui/src/styles:variables"],
+)

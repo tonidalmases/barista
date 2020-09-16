@@ -14,30 +14,8 @@
  * limitations under the License.
  */
 
-@import 'libs/barista-components/style/font-styles.scss';
-@import '../styles/variables.scss';
+// Used to launch the application under Bazel development mode.
+import { platformBrowser } from '@angular/platform-browser';
+import { AppModule } from './app/app.module';
 
-:host {
-  display: block;
-  width: 100%;
-  height: 100%;
-  font-family: 'Roboto', sans-serif;
-  background-color: var(--color-neutral-50);
-  background: linear-gradient(
-    90deg,
-    var(--color-neutral-50) 0%,
-    var(--color-background) 15%
-  );
-}
-
-.design-tokens-ui-nav {
-  position: absolute;
-  height: 100%;
-  z-index: 100;
-}
-
-.design-tokens-ui-main {
-  padding: 0 $fluid-spacing--large 0 132px;
-  height: 100vh;
-  overflow: auto;
-}
+platformBrowser().bootstrapModule(AppModule);

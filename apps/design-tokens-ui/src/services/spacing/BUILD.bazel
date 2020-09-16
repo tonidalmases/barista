@@ -1,0 +1,20 @@
+load("//tools/bazel_rules:index.bzl", "ng_module")
+
+package(default_visibility = ["//apps/design-tokens-ui/src:__subpackages__"])
+
+ng_module(
+    name = "spacing",
+    srcs = glob(["*.ts"]),
+    tsconfig = "//apps/design-tokens-ui:tsconfig_app",
+    deps = [
+        "//apps/design-tokens-ui/src/services/stateful-service",
+        "//apps/design-tokens-ui/src/utils",
+        "//libs/shared/design-system/interfaces",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//@types/node",
+        "@npm//lodash-es",
+        "@npm//rxjs",
+        "@npm//yaml",
+    ],
+)

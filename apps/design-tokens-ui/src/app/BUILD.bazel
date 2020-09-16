@@ -1,0 +1,48 @@
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("//tools/bazel_rules:index.bzl", "ng_module")
+
+package(default_visibility = ["//apps/design-tokens-ui/src:__subpackages__"])
+
+ng_module(
+    name = "app",
+    srcs = glob(
+        include = ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    angular_assets = [
+        ":styles",
+        ":nav_styles",
+        ":app.component.html",
+        ":components/nav/nav.component.html",
+    ],
+    tsconfig = "//apps/design-tokens-ui:tsconfig_app",
+    deps = [
+        "//apps/design-tokens-ui/src/pages/spacings",
+        "//apps/design-tokens-ui/src/services/app-theme",
+        "//libs/barista-components/expandable-section:compile",
+        "//libs/barista-components/icon:compile",
+        "//libs/barista-components/select:compile",
+        "//libs/fluid-elements/button:compile",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//@angular/forms",
+        "@npm//@angular/platform-browser",
+        "@npm//@angular/router",
+        "@npm//rxjs",
+    ],
+)
+
+sass_binary(
+    name = "styles",
+    src = ":app.component.scss",
+    deps = [
+        "//apps/design-tokens-ui/src/styles:variables",
+        "//libs/barista-components/style",
+    ],
+)
+
+sass_binary(
+    name = "nav_styles",
+    src = ":components/nav/nav.component.scss",
+    deps = ["//apps/design-tokens-ui/src/styles:variables"],
+)

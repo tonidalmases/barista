@@ -19,11 +19,14 @@ import { cloneDeep } from 'lodash-es';
 import { map } from 'rxjs/operators';
 import { stringify } from 'yaml';
 
-import * as spacingAliases from '@dynatrace/fluid-design-tokens-meta/aliases/spacing.alias';
+// TODO: This should be done via http request to fetch the json
+const spacingAliases = require('libs/shared/design-tokens/build/aliases/spacing.alias.json');
+// import * as spacingAliases from '@dynatrace/fluid-design-tokens-meta/aliases/spacing.alias';
 import { FluidKeyValueTokens } from '@dynatrace/shared/design-system/interfaces';
 import { StatefulServiceBase } from '../stateful-service';
 import { downloadStringAsTextFile } from '../../utils/download';
 import { DOCUMENT } from '@angular/common';
+import { Observable } from 'rxjs';
 
 const YAML_FILE_NAME = 'spacing.alias.yml';
 
@@ -38,7 +41,9 @@ export const getSpacings = (state: State) => state.spacingAliases;
   providedIn: 'root',
 })
 export class SpacingService extends StatefulServiceBase<State> {
-  spacings$ = this.state$.pipe(map(getSpacings));
+  spacings$: Observable<FluidKeyValueTokens> = this.state$.pipe(
+    map(getSpacings),
+  );
 
   constructor(@Inject(DOCUMENT) private _document: Document) {
     super();

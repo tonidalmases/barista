@@ -1,10 +1,10 @@
 <a class="design-tokens-ui-basic-link" routerLink="../">
   <h2 class="design-tokens-ui-back-link">
-    {{ (_palette$ | async)?.name | humanize }}<span i18n> settings</span>
+    {{ (_palette$ | async)?.name | humanize }}<span> settings</span>
   </h2>
 </a>
 
-<h3 i18n>Color</h3>
+<h3>Color</h3>
 
 <design-tokens-ui-color-picker
   #keyColorPicker
@@ -12,7 +12,7 @@
 ></design-tokens-ui-color-picker>
 
 <div class="design-tokens-ui-setting design-tokens-ui-labelled-input">
-  <label class="settings-label" id="color-space-interpolation" i18n
+  <label class="settings-label" id="color-space-interpolation"
     >Color space interpolation:</label
   >
   <dt-select
@@ -44,7 +44,7 @@
     (optionsChange)="_generationOptions = $event"
   ></design-tokens-ui-shared-generation-settings>
 
-  <h3 i18n>Curves</h3>
+  <h3>Curves</h3>
 
   <design-tokens-ui-easing-settings
     [options]="_generationOptions$ | async"

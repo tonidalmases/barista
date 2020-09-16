@@ -1,7 +1,7 @@
-<h2 i18n>General settings</h2>
+<h2>General settings</h2>
 
 <div class="design-tokens-ui-setting design-tokens-ui-labelled-input">
-  <label class="design-tokens-ui-settings-label" i18n>Background color:</label>
+  <label class="design-tokens-ui-settings-label">Background color:</label>
   <design-tokens-ui-color-picker
     #baseColorPicker
     [color]="_baseColor$ | async"
@@ -13,7 +13,7 @@
   (optionsChange)="_globalGenerationOptions = $event"
 ></design-tokens-ui-shared-generation-settings>
 
-<h3 i18n>Curves</h3>
+<h3>Curves</h3>
 
 <design-tokens-ui-easing-settings
   [options]="_globalGenerationOptions$ | async"

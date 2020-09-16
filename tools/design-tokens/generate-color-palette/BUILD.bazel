@@ -9,7 +9,7 @@ ts_library(
     runtime = "node",
     tsconfig = "//:tsconfig.base.json",
     deps = [
-        "//libs/shared/design-system/interfaces:design-system-interfaces_compile",
+        "//libs/shared/design-system/interfaces",
         "//tools/design-tokens/shared",
         "@npm//@types/node",
         "@npm//tslib",

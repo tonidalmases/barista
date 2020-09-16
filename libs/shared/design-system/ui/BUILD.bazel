@@ -27,7 +27,7 @@ ts_library(
         "@npm//rxjs",
         "@npm//express",
         "@npm//tslib",
-        "//libs/shared/design-system/interfaces:design-system-interfaces_compile",
+        "//libs/shared/design-system/interfaces",
     ],
 )
 

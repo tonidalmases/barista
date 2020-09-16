@@ -1,0 +1,15 @@
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
+
+package(default_visibility = ["//apps/design-tokens-ui/src:__subpackages__"])
+
+ts_library(
+    name = "utils",
+    srcs = glob(["**/*.ts"]),
+    tsconfig = "//apps/design-tokens-ui:tsconfig_app",
+    deps = [
+        "//libs/shared/design-system/interfaces",
+        "@npm//@adobe/leonardo-contrast-colors",
+        "@npm//d3-color",
+        "@npm//tslib",
+    ],
+)

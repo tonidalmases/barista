@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-@import '../../../libs/shared/design-tokens/generated/global/palette';
-@import '../../../libs/shared/design-tokens/generated/global/theme';
+@import 'libs/shared/design-tokens/build/global/palette';
+@import 'libs/shared/design-tokens/build/global/theme';
 @import './styles/link';
 @import './styles/input';
 @import './styles/fonts';

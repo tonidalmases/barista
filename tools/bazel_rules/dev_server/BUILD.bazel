@@ -1,0 +1,12 @@
+package(default_visibility = ["//:__subpackages__"])
+
+# Provides named UMD shims for `rxjs/operators` and `rxjs/testing`.
+# should be included in the "scripts" of a "ts_devserver"
+# rule and the "deps" of a "ts_web_test_suite" rule.
+filegroup(
+    name = "rxjs_umd_modules",
+    srcs = [
+        ":rxjs_shims.js",
+        "@npm//:node_modules/rxjs/bundles/rxjs.umd.js",
+    ],
+)
