@@ -1,4 +1,6 @@
 load("@npm//@bazel/typescript:index.bzl", "ts_config")
+load("//tools/bazel_rules:index.bzl", "ng_package")
+load("//libs/barista-components:config.bzl", "COMPONENT_TARGETS")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -8,4 +10,14 @@ ts_config(
     deps = [
         "//:tsconfig.base.json",
     ],
+)
+
+# Creates the @angular/material package published to npm.
+ng_package(
+    name = "barista-components",
+    srcs = ["package.json"],
+    entry_point = ":index.ts",
+    entry_point_name = "barista-components",
+    tags = ["release-package"],
+    deps = COMPONENT_TARGETS,
 )

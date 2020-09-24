@@ -5,7 +5,7 @@ load("//tools/bazel_rules:index.bzl", "jest", "ng_module_view_engine", "stylelin
 package(default_visibility = ["//visibility:public"])
 
 ng_module_view_engine(
-    name = "compile",
+    name = "alert",
     srcs = glob(
         include = ["**/*.ts"],
         exclude = [
@@ -24,20 +24,6 @@ ng_module_view_engine(
         "@npm//@angular/core",
         "@npm//@angular/common",
     ],
-)
-
-filegroup(
-    name = "alert",
-    srcs = glob(
-        include = ["**/*.ts"],
-        exclude = [
-            "**/*.spec.ts",
-            "src/test-setup.ts",
-        ],
-    ) + glob([
-        "**/*.html",
-        "**/*.scss",
-    ]),
 )
 
 sass_library(
