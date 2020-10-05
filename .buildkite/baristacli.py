@@ -102,7 +102,7 @@ def test_sharding(shard_id):
     expanded_test_targets = expand_test_target_patterns(BAZEL_BINARY, test_targets)
     test_targets = get_targets_for_shard(expanded_test_targets, shard_id, shard_count)
 
-  print("SHARDED: ", test_targets)
+  return test_targets
 
 
 def bubble_sort(array):
