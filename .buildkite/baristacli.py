@@ -69,7 +69,7 @@ def setup_logging(verbose=False):
 def getCommand(_platform, step_label, target, shard=0):
   step = {
     "label": "{}-{}{}".format(step_label, target, "" if shard == 0 else "-{}".format(shard)),
-    "command": "{} {} {} --task={} --target={} {}".format(PYTHON, SCRIPT, 'exec', _platform, target, "" if shard == 0 else "--shard={}".format(shard)),
+    "command": "source .buildkite/requirement.sh && {} {} {} --task={} --target={} {}".format(PYTHON, SCRIPT, 'exec', _platform, target, "" if shard == 0 else "--shard={}".format(shard)),
     "agents": {"queue": _platform},
   }
 
@@ -213,10 +213,12 @@ def arg_hander_pipeline(args):
 
 
   for _task in TASKS:
+    #pipeline_steps.append({"label": "requirement", "command" : "source .buildkite/requirement.sh", "agents": {"queue": _task}})
     pipeline_steps.append(getCommand(_task, PLATFORMS[_task]["name"], 'build'))
     pipeline_steps.append({"wait": None})
     if 'parallel' in TASKS[_task]['test_sharding']:
       for shard in range(1,TASKS[_task]['test_sharding']['parallel']+1):
+        #pipeline_steps.append({"label": "requirement", "command" : "source .buildkite/requirement.sh", "agents": {"queue": _task}})
         pipeline_steps.append(getCommand(_task, PLATFORMS[_task]["name"], 'test_sharding', shard))
 
   print(yaml.dump({"steps":pipeline_steps}))
