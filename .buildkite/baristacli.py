@@ -58,7 +58,7 @@ def execute_command(args, shell=False, fail_if_nonzero=True, cwd=None, print_out
 
 def arg_hander_command(args):
   if args.target == "test_sharding":
-    return(execute_command([BAZEL_BINARY] + [args.target] + test_sharding(int(args.shard))))
+    return(execute_command([BAZEL_BINARY] + [args.target.split("_")[0]] + test_sharding(int(args.shard))))
   else:
     return execute_command([BAZEL_BINARY] + [args.target] + TASKS[args.task][args.target]['bazel_cmd'])
 
