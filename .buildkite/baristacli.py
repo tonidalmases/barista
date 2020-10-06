@@ -272,7 +272,7 @@ def arg_hander_pipeline(args):
     #pipeline_steps.append({"label": "requirement", "command" : "source .buildkite/requirement.sh", "agents": {"queue": _task}})
     pipeline_steps.append(getCommand(_task, 'build'))
     pipeline_steps.append({"wait": None})
-    if 'parallel' in TASKS[_task]['test_sharding']:
+    if 'test_sharding' in TASKS[_task] and 'parallel' in TASKS[_task]['test_sharding']:
       for shard in range(1,TASKS[_task]['test_sharding']['parallel']+1):
         #pipeline_steps.append({"label": "requirement", "command" : "source .buildkite/requirement.sh", "agents": {"queue": _task}})
         pipeline_steps.append(getCommand(_task, 'test_sharding', shard))
