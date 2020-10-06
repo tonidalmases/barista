@@ -121,12 +121,14 @@ def getCommand(_platform, target, shard=0):
   if not PLATFORMS[_platform]["platform"] == "windows":
     extension = ".sh"
     sourceit = "source"
+    pathSep = "/"
   else:
     extension = ".bat"
     sourceit = ""
+    pathSep = "\\"
   step = {
     "label": "{}-{}{}".format(PLATFORMS[_platform]["name"], target, "" if shard == 0 else "-{}".format(shard)),
-    "command": "{} .buildkite/requirement{} && {} {} {} --task={} --target={} {}".format(sourceit, extension, PYTHON, SCRIPT, 'exec', _platform, target, "" if shard == 0 else "--shard={}".format(shard)),
+    "command": "{} .buildkite{}requirement{} && {} {} {} --task={} --target={} {}".format(sourceit, pathSep, extension, PYTHON, SCRIPT, 'exec', _platform, target, "" if shard == 0 else "--shard={}".format(shard)),
     "agents": {"queue": _platform},
   }
 
