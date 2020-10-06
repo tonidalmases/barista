@@ -45,17 +45,13 @@ TASKS = {
         "//..."
       ],
       'post_cmd': [
-        'dir c:\\'
+        'dir'
       ]
     },
     "test" : {
       'bazel_cmd': [
         "//..."
       ]
-    },
-    "test_sharding" : {
-      'parallel' : 4,
-      'bazel_cmd': None
     }
   }
 }
