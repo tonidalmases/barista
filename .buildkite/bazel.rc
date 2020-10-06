@@ -19,10 +19,10 @@ test --verbose_failures
 
 # Save downloaded repositories in a location that can be cached by Buildkite. This helps us
 # speeding up the analysis time significantly with Bazel managed node dependencies on the CI.
-build --repository_cache=/var/lib/buildkite-agent/repocache
+build --repository_cache=%workspace%/../buildkite-agent/repocache
 
 # Setup disk_cache as it is way faster then the remote cache
-build --disk_cache=/var/lib/buildkite-agent/bazel_disk_cache
+build --disk_cache=%workspace%/../buildkite-agent/bazel_disk_cache
 
 test --build_tests_only
 test --flaky_test_attempts=3
