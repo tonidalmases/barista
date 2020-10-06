@@ -6,20 +6,25 @@ import yaml
 import os
 import subprocess
 
-SCRIPT = os.path.join(os.path.basename(os.path.dirname(__file__)),os.path.basename(__file__))
-PYTHON = "python3"
-BAZEL_BINARY = "bazel"
+def is_windows():
+  return os.name == "nt"
 
-#"shell_command" : [
-#  "ps -ef",
-#  "ls -l"
-#],
+SCRIPT = os.path.join(os.path.basename(os.path.dirname(__file__)),os.path.basename(__file__))
+PYTHON = "python3" if not is_windows() else "python"
+BAZEL_BINARY = "bazel"
 
 TASKS = {
   "default" : {
     "build" : {
+      'pre_cmd' : [
+        "ps -ef",
+        "ls -l"
+      ],
       'bazel_cmd' : [
         "//..."
+      ],
+      'post_cmd': [
+        'ps -ef | grep bazel'
       ]
     },
     "test" : {
@@ -29,25 +34,64 @@ TASKS = {
     },
     "test_sharding" : {
       'parallel' : 4,
-      'bazel_cmd': []
+      'bazel_cmd': None
+    }
+  },
+  "windows10" : {
+    "build" : {
+      'pre_cmd' : [
+        "dir"
+      ],
+      'bazel_cmd' : [
+        "//..."
+      ],
+      'post_cmd': [
+        'dir c:\\'
+      ]
+    },
+    "test" : {
+      'bazel_cmd': [
+        "//..."
+      ]
+    },
+    "test_sharding" : {
+      'parallel' : 4,
+      'bazel_cmd': None
     }
   }
 }
 
 PLATFORMS = {
   "default" : {
-    "name": "AWS Linux 2"
+    "name": "AWS Linux 2",
+    "platform": "linux"
   },
-  "windows": {
-    "name": "Windows 10"
+  "windows10": {
+    "name": "Windows 10",
+    "platform": "windows"
   }
 }
+
+
+SCRIPT_EXTENSION = ".sh" if not is_windows() else ".bat"
 
 def eprint(*args, **kwargs):
   """
   Print to stderr and flush (just in case).
   """
   print(*args, flush=True, file=sys.stderr, **kwargs)
+
+def execute_shell_commands(commands):
+  if not commands:
+    return
+  if is_windows():
+    print_collapsed_group(":cmd: Setup (Windows Commands)")
+    shell_command = "\n".join(commands)
+    execute_command([shell_command], shell=True)
+  else:
+    print_collapsed_group(":bash: Setup (Shell Commands)")
+    shell_command = "\n".join(["set -e"] + commands)
+    execute_command([shell_command], shell=True)
 
 def execute_command(args, shell=False, fail_if_nonzero=True, cwd=None, print_output=True):
   if print_output:
@@ -57,19 +101,32 @@ def execute_command(args, shell=False, fail_if_nonzero=True, cwd=None, print_out
   ).returncode
 
 def arg_hander_command(args):
-  if args.target == "test_sharding":
-    return(execute_command([BAZEL_BINARY] + [args.target.split("_")[0]] + test_sharding(int(args.shard))))
+  # execute pre commands
+  if "pre_cmd" in TASKS[args.task][args.target]:
+    execute_shell_commands(TASKS[args.task][args.target]['pre_cmd'])
+
+  if args.target == "test_sharding" and TASKS[args.task][args.target]['bazel_cmd'] == None:
+    execute_command([BAZEL_BINARY] + [args.target.split("_")[0]] + test_sharding(int(args.shard)))
   else:
-    return execute_command([BAZEL_BINARY] + [args.target] + TASKS[args.task][args.target]['bazel_cmd'])
+    execute_command([BAZEL_BINARY] + [args.target] + TASKS[args.task][args.target]['bazel_cmd'])
+
+  if "post_cmd" in TASKS[args.task][args.target]:
+    execute_shell_commands(TASKS[args.task][args.target]['post_cmd'])
 
 def setup_logging(verbose=False):
   logging.basicConfig(format='%(levelname)s - %(module)s: %(message)s',
                       level=logging.DEBUG if verbose else logging.INFO)
 
-def getCommand(_platform, step_label, target, shard=0):
+def getCommand(_platform, target, shard=0):
+  if not PLATFORMS[_platform]["platform"] == "windows":
+    extension = ".sh"
+    sourceit = "source"
+  else:
+    extension = ".bat"
+    sourceit = ""
   step = {
-    "label": "{}-{}{}".format(step_label, target, "" if shard == 0 else "-{}".format(shard)),
-    "command": "source .buildkite/requirement.sh && {} {} {} --task={} --target={} {}".format(PYTHON, SCRIPT, 'exec', _platform, target, "" if shard == 0 else "--shard={}".format(shard)),
+    "label": "{}-{}{}".format(PLATFORMS[_platform]["name"], target, "" if shard == 0 else "-{}".format(shard)),
+    "command": "{} .buildkite/requirement{} && {} {} {} --task={} --target={} {}".format(sourceit, extension, PYTHON, SCRIPT, 'exec', _platform, target, "" if shard == 0 else "--shard={}".format(shard)),
     "agents": {"queue": _platform},
   }
 
@@ -214,12 +271,14 @@ def arg_hander_pipeline(args):
 
   for _task in TASKS:
     #pipeline_steps.append({"label": "requirement", "command" : "source .buildkite/requirement.sh", "agents": {"queue": _task}})
-    pipeline_steps.append(getCommand(_task, PLATFORMS[_task]["name"], 'build'))
+    pipeline_steps.append(getCommand(_task, 'build'))
     pipeline_steps.append({"wait": None})
     if 'parallel' in TASKS[_task]['test_sharding']:
       for shard in range(1,TASKS[_task]['test_sharding']['parallel']+1):
         #pipeline_steps.append({"label": "requirement", "command" : "source .buildkite/requirement.sh", "agents": {"queue": _task}})
-        pipeline_steps.append(getCommand(_task, PLATFORMS[_task]["name"], 'test_sharding', shard))
+        pipeline_steps.append(getCommand(_task, 'test_sharding', shard))
+    else:
+      pipeline_steps.append(getCommand(_task, 'test'))
 
   print(yaml.dump({"steps":pipeline_steps}))
 
