@@ -10,7 +10,6 @@ def is_windows():
   return os.name == "nt"
 
 SCRIPT = os.path.join(os.path.basename(os.path.dirname(__file__)),os.path.basename(__file__))
-PYTHON = "python3" if not is_windows() else "python"
 BAZEL_BINARY = "bazel"
 
 TASKS = {
@@ -122,13 +121,15 @@ def getCommand(_platform, target, shard=0):
     extension = ".sh"
     sourceit = "source"
     pathSep = "/"
+    python_bin = "python3"
   else:
     extension = ".bat"
     sourceit = ""
     pathSep = "\\"
+    python_bin = "python"
   step = {
     "label": "{}-{}{}".format(PLATFORMS[_platform]["name"], target, "" if shard == 0 else "-{}".format(shard)),
-    "command": "{} .buildkite{}requirement{} && {} {} {} --task={} --target={} {}".format(sourceit, pathSep, extension, PYTHON, SCRIPT, 'exec', _platform, target, "" if shard == 0 else "--shard={}".format(shard)),
+    "command": "{} .buildkite{}requirement{} && {} {} {} --task={} --target={} {}".format(sourceit, pathSep, extension, python_bin, SCRIPT, 'exec', _platform, target, "" if shard == 0 else "--shard={}".format(shard)),
     "agents": {"queue": _platform},
   }
 
