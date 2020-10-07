@@ -68,8 +68,8 @@ def execute_shell_commands(commands):
     return
   if is_windows():
     print_collapsed_group(":cmd: Setup (Windows Commands)")
-    shell_command = "\n".join(commands)
-    execute_command([shell_command], shell=True)
+    for cmd in commands:
+      execute_command(cmd.split(" "), shell=True)
   else:
     print_collapsed_group(":bash: Setup (Shell Commands)")
     shell_command = "\n".join(["set -e"] + commands)
@@ -321,7 +321,6 @@ def arg_hander_pipeline(args):
 
     if 'build' in task_config:
       pipeline_steps.append(getCommand(_task, 'build'))
-    pipeline_steps.append({"wait": None})
 
     if 'test_sharding' in task_config \
       and 'parallel' in task_config['test_sharding']:
