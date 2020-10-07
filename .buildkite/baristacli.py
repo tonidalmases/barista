@@ -5,6 +5,7 @@ import logging
 import yaml
 import os
 import subprocess
+import copy
 
 # path to buildscript (called from root directory of the repository)
 SCRIPT = os.path.join(os.path.basename(os.path.dirname(__file__)),
@@ -114,8 +115,11 @@ def arg_hander_command(args):
       [BAZEL_BINARY] + [args.target.split("_")[0]] + test_sharding(
         int(args.shard)))
   else:
-    execute_command(
-      [BAZEL_BINARY] + [args.target] + stage[args.target]['bazel_cmd'])
+    if 'bazel_cmd' in stage[args.target]:
+      execute_command(
+        [BAZEL_BINARY] + [args.target] + stage[args.target]['bazel_cmd'])
+    if 'cmd' in stage[args.target]:
+      execute_shell_commands(stage[args.target]['cmd'])
 
   if "post_cmd" in stage[args.target]:
     execute_shell_commands(stage[args.target]['post_cmd'])
@@ -300,17 +304,27 @@ def load_config(file_config):
 
 
 def arg_hander_pipeline(args):
-  TASKS = load_config(args.config)
+  TMP_TASKS = load_config(args.config)
+  TASKS = copy.deepcopy(TMP_TASKS)
 
   pipeline_steps = []
 
+  # clean disabled tasks
+  for _task, task_config in TMP_TASKS["tasks"].items():
+    for command, instructions in task_config.items():
+      if 'disable' in instructions and instructions['disable'] == True:
+        TASKS["tasks"][_task].pop(command)
+
   for _task, task_config in TASKS["tasks"].items():
+    if 'shell_command' in task_config:
+      pipeline_steps.append(getCommand(_task, 'shell_command'))
+
     if 'build' in task_config:
       pipeline_steps.append(getCommand(_task, 'build'))
     pipeline_steps.append({"wait": None})
 
-    if 'test_sharding' in task_config and 'parallel' in task_config[
-      'test_sharding']:
+    if 'test_sharding' in task_config \
+      and 'parallel' in task_config['test_sharding']:
       for shard in range(1, task_config['test_sharding']['parallel'] + 1):
         pipeline_steps.append(getCommand(_task, 'test_sharding', shard))
     else:

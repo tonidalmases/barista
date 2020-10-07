@@ -1,6 +1,13 @@
 tasks:
   default:
+    shell_command:
+      pre_cmd:
+      cmd:
+        - bazel build //...
+        - bazel test //...
+      post_cmd:
     build:
+      disable: true
       pre_cmd:
         - ps -ef
         - ls -l
@@ -9,9 +16,11 @@ tasks:
       post_cmd:
         - ps -ef | grep bazel
     test:
+      disable: true
       bazel_cmd:
         - "//..."
     test_sharding:
+      disable: true
       parallel: 4
   windows10:
     build:
