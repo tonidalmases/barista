@@ -39,3 +39,8 @@ tasks:
         - "//..."
       post_cmd:
         - dir
+    test:
+      bazel_flags:
+        - "--keep_going"
+      bazel_cmd:
+        - "//..."
