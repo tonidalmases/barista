@@ -149,8 +149,9 @@ def arg_hander_command(args):
 
 def inCI():
   # only if we are in CI
-  if not "BUILDKITE" in os.environ:
-    return 0
+  if "BUILDKITE" in os.environ:
+    return True
+  return  False
 
 def upload_test_logs_from_bep(bep_file):
   if not inCI():
