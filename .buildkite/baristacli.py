@@ -110,14 +110,23 @@ def arg_hander_command(args):
   if "pre_cmd" in stage[args.target]:
     execute_shell_commands(stage[args.target]['pre_cmd'])
 
+  # bazel build info file
+  build_event_file = "build_event_file.json"
+
   if args.target == "test_sharding" and not 'bazel_cmd' in stage[args.target]:
+    bazel_flags = stage[args.target]["bazel_flags"] if  "bazel_flags" in stage[args.target] else []
+    # add build event json
+    bazel_flags += ["--build_event_json_file={}".format(build_event_file)]
     execute_command(
       [BAZEL_BINARY] + [args.target.split("_")[0]] + test_sharding(
         int(args.shard)))
   else:
     if 'bazel_cmd' in stage[args.target]:
+      bazel_flags = stage[args.target]["bazel_flags"] if  "bazel_flags" in stage[args.target] else []
+      # add build event json
+      bazel_flags += ["--build_event_json_file={}".format(build_event_file)]
       execute_command(
-        [BAZEL_BINARY] + [args.target] + stage[args.target]['bazel_cmd'])
+        [BAZEL_BINARY] + [args.target] + stage[args.target]['bazel_cmd'] + bazel_flags)
     if 'cmd' in stage[args.target]:
       execute_shell_commands(stage[args.target]['cmd'])
 

@@ -1,22 +1,27 @@
 tasks:
   default:
     shell_command:
+      disable: true
       pre_cmd:
       cmd:
         - bazel build //...
         - bazel test //...
       post_cmd:
     build:
-      disable: true
+      disable: false
       pre_cmd:
         - ps -ef
         - ls -l
+      bazel_flags:
+        - "--keep_going"
       bazel_cmd:
         - "//..."
       post_cmd:
         - ps -ef | grep bazel
     test:
-      disable: true
+      disable: false
+      bazel_flags:
+        - "--keep_going"
       bazel_cmd:
         - "//..."
     test_sharding:
@@ -24,6 +29,8 @@ tasks:
       parallel: 4
   windows10:
     build:
+      bazel_flags:
+        - "--keep_going"
       pre_cmd:
         - dir
       bazel_cmd:
