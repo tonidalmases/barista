@@ -120,7 +120,7 @@ def arg_hander_command(args):
   # bazel build info file
   build_event_file = "build_event_file.json"
 
-  if args.target == "test_sharding" and not 'bazel_cmd' in stage[args.target]:
+  if args.target == "test" and 'parallel' in stage[args.target]:
     bazel_flags = stage[args.target]["bazel_flags"] if "bazel_flags" in stage[
       args.target] else []
     # add build event json
@@ -424,22 +424,35 @@ def arg_hander_pipeline(args):
     for command, instructions in task_config.items():
       if 'disable' in instructions and instructions['disable'] == True:
         TASKS["tasks"][_task].pop(command)
+      if args.target != None and args.target != command and command in TASKS["tasks"][_task]:
+        TASKS["tasks"][_task].pop(command)
 
+  triggerStages = []
   for _task, task_config in TASKS["tasks"].items():
     if 'shell_command' in task_config:
       pipeline_steps.append(getCommand(_task, 'shell_command'))
+      triggerStages.extend(task_config['shell_command']['trigger'] if 'trigger' in task_config['shell_command'] else [])
 
     if 'build' in task_config:
       pipeline_steps.append(getCommand(_task, 'build'))
+      triggerStages.extend(task_config['build']['trigger'] if 'trigger' in task_config['build'] else [])
 
-    if 'test_sharding' in task_config \
-      and 'parallel' in task_config['test_sharding']:
-      for shard in range(1, task_config['test_sharding']['parallel'] + 1):
-        pipeline_steps.append(getCommand(_task, 'test_sharding', shard))
+    if 'test' in task_config \
+      and 'parallel' in task_config['test']:
+      # do the sharding
+      for shard in range(1, task_config['test']['parallel'] + 1):
+        pipeline_steps.append(getCommand(_task, 'test', shard=shard))
+      triggerStages.extend(task_config['test']['trigger'] if 'trigger' in task_config['test'] else [])
     else:
       if 'test' in task_config:
         pipeline_steps.append(getCommand(_task, 'test'))
+        triggerStages.extend(task_config['test']['trigger'] if 'trigger' in task_config['test'] else [])
 
+  # remove duplicate values
+  if args.target != None:
+    pipeline_steps.append({"wait": None})
+    for stage in list(dict.fromkeys(triggerStages)):
+      pipeline_steps.append({"trigger": stage})
   print(yaml.dump({"steps": pipeline_steps}))
 
 
@@ -460,6 +473,10 @@ def main():
   sub_parser_buildkite_pipeline.add_argument('--config',
                                              help="specify config file",
                                              required=False)
+  sub_parser_buildkite_pipeline.add_argument('--target',
+                                             help="specify target file",
+                                             required=False,
+                                             default="build")
   sub_parser_buildkite_pipeline.set_defaults(handler=arg_hander_pipeline)
 
   sub_parser_command = sub_parsers.add_parser('exec',

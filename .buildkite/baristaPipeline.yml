@@ -1,6 +1,8 @@
 tasks:
   default:
     shell_command:
+      trigger:
+        - test
       disable: true
       pre_cmd:
       cmd:
@@ -8,6 +10,8 @@ tasks:
         - bazel test //...
       post_cmd:
     build:
+      trigger:
+        - test
       disable: false
       pre_cmd:
         - ps -ef
@@ -19,18 +23,16 @@ tasks:
       post_cmd:
         - ps -ef | grep bazel
     test:
-      disable: true
+      parallel: 4
+      disable: false
       bazel_flags:
         - "--keep_going"
       bazel_cmd:
         - "//..."
-    test_sharding:
-      bazel_flags:
-        - "--keep_going"
-      disable: false
-      parallel: 4
   windows10:
     build:
+      trigger:
+        - test
       bazel_flags:
         - "--keep_going"
       pre_cmd:
