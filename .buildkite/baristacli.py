@@ -314,7 +314,8 @@ def arg_hander_pipeline(args):
       for shard in range(1, task_config['test_sharding']['parallel'] + 1):
         pipeline_steps.append(getCommand(_task, 'test_sharding', shard))
     else:
-      pipeline_steps.append(getCommand(_task, 'test'))
+      if 'test' in task_config:
+        pipeline_steps.append(getCommand(_task, 'test'))
 
   print(yaml.dump({"steps": pipeline_steps}))
 

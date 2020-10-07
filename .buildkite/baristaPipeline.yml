@@ -21,6 +21,3 @@ tasks:
         - "//..."
       post_cmd:
         - dir
-    test:
-      bazel_cmd:
-        - "//..."
