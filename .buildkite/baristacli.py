@@ -452,7 +452,10 @@ def arg_hander_pipeline(args):
   if args.target != None:
     pipeline_steps.append({"wait": None})
     for stage in list(dict.fromkeys(triggerStages)):
-      pipeline_steps.append({"trigger": stage})
+      pipeline_steps.append({"trigger": stage,
+                             "build": {"commit": "$BUILDKITE_COMMIT",
+                                       "branch": "$BUILDKITE_BRANCH",
+                                       "message": "$BUILDKITE_MESSAGE"}})
   print(yaml.dump({"steps": pipeline_steps}))
 
 
