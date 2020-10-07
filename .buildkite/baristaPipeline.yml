@@ -19,13 +19,15 @@ tasks:
       post_cmd:
         - ps -ef | grep bazel
     test:
-      disable: false
+      disable: true
       bazel_flags:
         - "--keep_going"
       bazel_cmd:
         - "//..."
     test_sharding:
-      disable: true
+      bazel_flags:
+        - "--keep_going"
+      disable: false
       parallel: 4
   windows10:
     build:

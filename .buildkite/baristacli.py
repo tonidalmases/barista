@@ -3,9 +3,14 @@ import sys
 import argparse
 import logging
 import yaml
+import json
 import os
 import subprocess
 import copy
+from urllib.request import url2pathname
+from urllib.parse import urlparse
+from shutil import copyfile
+import tempfile
 
 # path to buildscript (called from root directory of the repository)
 SCRIPT = os.path.join(os.path.basename(os.path.dirname(__file__)),
@@ -40,6 +45,8 @@ PLATFORMS = {
 class BuildKiteConfigError(ValueError):
   pass
 
+class BazelFailingTests(Exception):
+  pass
 
 def is_windows():
   """
@@ -114,24 +121,117 @@ def arg_hander_command(args):
   build_event_file = "build_event_file.json"
 
   if args.target == "test_sharding" and not 'bazel_cmd' in stage[args.target]:
-    bazel_flags = stage[args.target]["bazel_flags"] if  "bazel_flags" in stage[args.target] else []
+    bazel_flags = stage[args.target]["bazel_flags"] if "bazel_flags" in stage[
+      args.target] else []
     # add build event json
     bazel_flags += ["--build_event_json_file={}".format(build_event_file)]
     execute_command(
       [BAZEL_BINARY] + [args.target.split("_")[0]] + test_sharding(
-        int(args.shard)))
+        int(args.shard)), fail_if_nonzero=True if not inCI() else False)
   else:
     if 'bazel_cmd' in stage[args.target]:
-      bazel_flags = stage[args.target]["bazel_flags"] if  "bazel_flags" in stage[args.target] else []
+      bazel_flags = stage[args.target]["bazel_flags"] if "bazel_flags" in stage[
+        args.target] else []
       # add build event json
       bazel_flags += ["--build_event_json_file={}".format(build_event_file)]
       execute_command(
-        [BAZEL_BINARY] + [args.target] + stage[args.target]['bazel_cmd'] + bazel_flags)
+        [BAZEL_BINARY] + [args.target] + stage[args.target][
+          'bazel_cmd'] + bazel_flags, fail_if_nonzero=False if args.target == "test" and inCI() else True)
     if 'cmd' in stage[args.target]:
       execute_shell_commands(stage[args.target]['cmd'])
 
+  # analyse Test logs and fail afterwards
+  if upload_test_logs_from_bep(build_event_file) > 0:
+    raise BazelFailingTests("Tests failed")
+
   if "post_cmd" in stage[args.target]:
     execute_shell_commands(stage[args.target]['post_cmd'])
+
+def inCI():
+  # only if we are in CI
+  if not "BUILDKITE" in os.environ:
+    return 0
+
+def upload_test_logs_from_bep(bep_file):
+  if not inCI():
+    return 0
+
+  tmpdir = tempfile.mkdtemp()
+  if os.path.exists(bep_file):
+    all_test_logs = analyseLogs(bep_file)
+
+    if all_test_logs:
+      files_to_upload = rename_test_logs_for_upload(all_test_logs, tmpdir)
+      cwd = os.getcwd()
+      try:
+        os.chdir(tmpdir)
+        test_logs = [os.path.relpath(file, tmpdir) for file in files_to_upload]
+        test_logs = sorted(test_logs)
+        execute_command(
+          ["buildkite-agent", "artifact", "upload", ";".join(test_logs)])
+      finally:
+        os.chdir(cwd)
+    return len(all_test_logs)
+  return 0
+
+def rename_test_logs_for_upload(test_logs, tmpdir):
+  # Rename the test.log files to the target that created them
+  # so that it's easy to associate test.log and target.
+  new_paths = []
+  for label, files in test_logs:
+    attempt = 0
+    if len(files) > 1:
+      attempt = 1
+    for test_log in files:
+      try:
+        new_path = test_label_to_path(tmpdir, label, attempt)
+        os.makedirs(os.path.dirname(new_path), exist_ok=True)
+        copyfile(test_log, new_path)
+        new_paths.append(new_path)
+        attempt += 1
+      except IOError as err:
+        # Log error and ignore.
+        eprint(err)
+  return new_paths
+
+
+def test_label_to_path(tmpdir, label, attempt):
+  # remove leading //
+  path = label[2:]
+  path = path.replace("/", os.sep)
+  path = path.replace(":", os.sep)
+  if attempt == 0:
+    path = os.path.join(path, "test.log")
+  else:
+    path = os.path.join(path, "attempt_" + str(attempt) + ".log")
+  return os.path.join(tmpdir, path)
+
+
+def analyseLogs(build_event_file, status=["FAILED", "TIMEOUT", "FLAKY"]):
+  targets = []
+  with open(build_event_file, encoding="utf-8") as f:
+    raw_data = f.read()
+  decoder = json.JSONDecoder()
+
+  pos = 0
+  while pos < len(raw_data):
+    try:
+      bep_obj, size = decoder.raw_decode(raw_data[pos:])
+    except ValueError as e:
+      eprint("JSON decoding error: " + str(e))
+      return targets
+    if "testSummary" in bep_obj:
+      test_target = bep_obj["id"]["testSummary"]["label"]
+      test_status = bep_obj["testSummary"]["overallStatus"]
+      if test_status in status:
+        outputs = bep_obj["testSummary"]["failed"]
+        test_logs = []
+        for output in outputs:
+          test_logs.append(url2pathname(urlparse(output["uri"]).path))
+        targets.append((test_target, test_logs))
+    pos += size + 1
+
+  return targets
 
 
 def setup_logging(verbose=False):
