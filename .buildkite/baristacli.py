@@ -109,7 +109,7 @@ def arg_hander_command(args):
   if "pre_cmd" in stage[args.target]:
     execute_shell_commands(stage[args.target]['pre_cmd'])
 
-  if args.target == "test_sharding" and not ['bazel_cmd'] in stage[args.target]:
+  if args.target == "test_sharding" and not 'bazel_cmd' in stage[args.target]:
     execute_command(
       [BAZEL_BINARY] + [args.target.split("_")[0]] + test_sharding(
         int(args.shard)))
