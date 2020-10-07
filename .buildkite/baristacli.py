@@ -27,11 +27,11 @@ BAZEL_BINARY = "bazel"
 # }
 PLATFORMS = {
   "default": {
-    "name": "AWS Linux 2",
+    "name": ":linux: AWS Linux 2",
     "platform": "linux"
   },
   "windows10": {
-    "name": "Windows 10",
+    "name": ":windows: Windows 10",
     "platform": "windows"
   }
 }
