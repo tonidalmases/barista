@@ -1,0 +1,26 @@
+tasks:
+  default:
+    build:
+      pre_cmd:
+        - ps -ef
+        - ls -l
+      bazel_cmd:
+        - "//..."
+      post_cmd:
+        - ps -ef | grep bazel
+    test:
+      bazel_cmd:
+        - "//..."
+    test_sharding:
+      parallel: 4
+  windows10:
+    build:
+      pre_cmd:
+        - dir
+      bazel_cmd:
+        - "//..."
+      post_cmd:
+        - dir
+    test:
+      bazel_cmd:
+        - "//..."
