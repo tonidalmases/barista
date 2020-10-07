@@ -305,9 +305,6 @@ def arg_hander_pipeline(args):
   pipeline_steps = []
 
   for _task, task_config in TASKS["tasks"].items():
-    print("DOPS:{}={}".format(_task, task_config))
-    # pipeline_steps.append({"label": "requirement", "command" : "source .buildkite/requirement.sh", "agents": {"queue": _task}})
-
     if 'build' in task_config:
       pipeline_steps.append(getCommand(_task, 'build'))
     pipeline_steps.append({"wait": None})
@@ -315,7 +312,6 @@ def arg_hander_pipeline(args):
     if 'test_sharding' in task_config and 'parallel' in task_config[
       'test_sharding']:
       for shard in range(1, task_config['test_sharding']['parallel'] + 1):
-        # pipeline_steps.append({"label": "requirement", "command" : "source .buildkite/requirement.sh", "agents": {"queue": _task}})
         pipeline_steps.append(getCommand(_task, 'test_sharding', shard))
     else:
       pipeline_steps.append(getCommand(_task, 'test'))
