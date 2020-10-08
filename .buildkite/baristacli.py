@@ -414,50 +414,39 @@ def load_config(file_config):
 
 
 def arg_hander_pipeline(args):
+
   TMP_TASKS = load_config(args.config)
   TASKS = copy.deepcopy(TMP_TASKS)
-
-  pipeline_steps = []
 
   # clean disabled tasks
   for _task, task_config in TMP_TASKS["tasks"].items():
     for command, instructions in task_config.items():
       if 'disable' in instructions and instructions['disable'] == True:
         TASKS["tasks"][_task].pop(command)
-      if args.target != None and args.target != command and command in TASKS["tasks"][_task]:
-        TASKS["tasks"][_task].pop(command)
 
+  print(yaml.dump({"steps": generatePipeline(args, tasks=TASKS, targets=["build"])}))
+
+
+def generatePipeline(args, tasks=None, targets=[]):
+
+  pipeline_steps = []
   triggerStages = []
-  for _task, task_config in TASKS["tasks"].items():
-    if 'shell_command' in task_config:
-      pipeline_steps.append(getCommand(_task, 'shell_command'))
-      triggerStages.extend(task_config['shell_command']['trigger'] if 'trigger' in task_config['shell_command'] else [])
+  for target in targets:
+    for _task, task_config in tasks["tasks"].items():
+      if target in task_config:
+        if 'parallel' in task_config[target]:
+          for shard in range(1, task_config[target]['parallel'] + 1):
+            pipeline_steps.append(getCommand(_task, target, shard=shard))
+          triggerStages.extend(task_config[target]['trigger'] if 'trigger' in task_config[target] else [])
+        else:
+          pipeline_steps.append(getCommand(_task, target))
+          triggerStages.extend(task_config[target]['trigger'] if 'trigger' in task_config[target] else [])
+    if len(triggerStages) > 0:
+      pipeline_steps.append({"wait": None})
 
-    if 'build' in task_config:
-      pipeline_steps.append(getCommand(_task, 'build'))
-      triggerStages.extend(task_config['build']['trigger'] if 'trigger' in task_config['build'] else [])
-
-    if 'test' in task_config \
-      and 'parallel' in task_config['test']:
-      # do the sharding
-      for shard in range(1, task_config['test']['parallel'] + 1):
-        pipeline_steps.append(getCommand(_task, 'test', shard=shard))
-      triggerStages.extend(task_config['test']['trigger'] if 'trigger' in task_config['test'] else [])
-    else:
-      if 'test' in task_config:
-        pipeline_steps.append(getCommand(_task, 'test'))
-        triggerStages.extend(task_config['test']['trigger'] if 'trigger' in task_config['test'] else [])
-
-  # remove duplicate values
-  if args.target != None:
-    pipeline_steps.append({"wait": None})
-    for stage in list(dict.fromkeys(triggerStages)):
-      pipeline_steps.append({"trigger": stage,
-                             "build": {"commit": "$BUILDKITE_COMMIT",
-                                       "branch": "$BUILDKITE_BRANCH",
-                                       "message": "$BUILDKITE_MESSAGE"}})
-  print(yaml.dump({"steps": pipeline_steps}))
-
+  if len(triggerStages) > 0:
+    pipeline_steps.extend(generatePipeline(args,tasks=tasks,targets=list(dict.fromkeys(triggerStages))))
+  return pipeline_steps
 
 def main():
   parser = argparse.ArgumentParser(
@@ -476,10 +465,7 @@ def main():
   sub_parser_buildkite_pipeline.add_argument('--config',
                                              help="specify config file",
                                              required=False)
-  sub_parser_buildkite_pipeline.add_argument('--target',
-                                             help="specify target file",
-                                             required=False,
-                                             default="build")
+
   sub_parser_buildkite_pipeline.set_defaults(handler=arg_hander_pipeline)
 
   sub_parser_command = sub_parsers.add_parser('exec',
