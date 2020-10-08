@@ -424,7 +424,7 @@ def arg_hander_pipeline(args):
       if 'disable' in instructions and instructions['disable'] == True:
         TASKS["tasks"][_task].pop(command)
 
-  if args.simple == True:
+  if args.multistage == False:
     pip = Pipeline(args,TASKS, targets=["build"])
     print(yaml.dump({"steps": pip.getPipeline()}))
   else:
@@ -519,11 +519,11 @@ def main():
   sub_parser_buildkite_pipeline.add_argument('--config',
                                              help="specify config file",
                                              required=False)
-  sub_parser_buildkite_pipeline.add_argument('--simple',
-                                             help="run build and test in one host",
+  sub_parser_buildkite_pipeline.add_argument('--multistage',
+                                             help="run build and test one different hosts",
                                              required=False,
                                              action='store_true',
-                                             default=True)
+                                             default=False)
 
   sub_parser_buildkite_pipeline.set_defaults(handler=arg_hander_pipeline)
 
