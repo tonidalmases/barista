@@ -424,8 +424,62 @@ def arg_hander_pipeline(args):
       if 'disable' in instructions and instructions['disable'] == True:
         TASKS["tasks"][_task].pop(command)
 
-  print(yaml.dump({"steps": generatePipeline(args, tasks=TASKS, targets=["build"])}))
+  if args.simple == True:
+    pip = Pipeline(args,TASKS, targets=["build"])
+    print(yaml.dump({"steps": pip.getPipeline()}))
+  else:
+    print(yaml.dump({"steps": generatePipeline(args, tasks=TASKS, targets=["build"])}))
 
+
+class Pipeline:
+  def __init__(self, args, TASKS, targets="build"):
+    self.TASKS = TASKS
+    self.targets = targets
+    self.args = args
+
+
+  def getCommand(self,_platform, target):
+    """
+    Generate buildkite pipeline config as yaml and print it to stdout
+    """
+    if not PLATFORMS[_platform]["platform"] == "windows":
+      extension = ".sh"
+      sourceit = "source"
+      pathSep = "/"
+      python_bin = "python3"
+    else:
+      extension = ".bat"
+      sourceit = ""
+      pathSep = "\\"
+      python_bin = "python"
+
+    return "{} .buildkite{}requirement{} && {} {} {} --platform={} --target={}".format(
+        sourceit, pathSep, extension, python_bin, SCRIPT, 'exec', _platform,
+        target)
+
+  def analysePlatform(self, platform, task_config, targets):
+    commands = []
+    for target in targets:
+      if target not in task_config:
+        continue
+      commands.append(self.getCommand(platform,target))
+      if 'trigger' in task_config[target]:
+        commands.extend(self.analysePlatform(platform,task_config,task_config[target]['trigger']))
+
+    return commands
+
+
+  def getPipeline(self):
+    steps = []
+    for platform, task_config in self.TASKS["tasks"].items():
+      commands = []
+      commands = self.analysePlatform(platform, task_config, self.targets)
+      step = {"label": "{}".format(PLATFORMS[platform]["name"]),
+              "agents": {"queue": platform},
+              "command": commands}
+      steps.append(step)
+
+    return steps
 
 def generatePipeline(args, tasks=None, targets=[]):
 
@@ -465,6 +519,11 @@ def main():
   sub_parser_buildkite_pipeline.add_argument('--config',
                                              help="specify config file",
                                              required=False)
+  sub_parser_buildkite_pipeline.add_argument('--simple',
+                                             help="run build and test in one host",
+                                             required=False,
+                                             action='store_true',
+                                             default=True)
 
   sub_parser_buildkite_pipeline.set_defaults(handler=arg_hander_pipeline)
 
