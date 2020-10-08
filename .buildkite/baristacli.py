@@ -120,7 +120,7 @@ def arg_hander_command(args):
   # bazel build info file
   build_event_file = "build_event_file.json"
 
-  if args.target == "test" and 'parallel' in stage[args.target]:
+  if args.target == "test" and 'parallel' in stage[args.target] and int(args.shard) != 0:
     bazel_flags = stage[args.target]["bazel_flags"] if "bazel_flags" in stage[
       args.target] else []
     # add build event json
@@ -536,7 +536,8 @@ def main():
   sub_parser_command.add_argument('--target', help="specify target",
                                   required=True)
   sub_parser_command.add_argument('--shard', help="specify shard",
-                                  required=False)
+                                  required=False,
+                                  default="0")
   sub_parser_command.set_defaults(handler=arg_hander_command)
 
   args = parser.parse_args(sys.argv[1:])
