@@ -7,7 +7,7 @@ tasks:
         - echo "Pre command"
         - ls -l
         - ps -ef
-        - ls -l node_modules
+        - ls -l node_modules || echo "not found"
       bazel_flags:
         - "--keep_going"
       bazel_cmd:
