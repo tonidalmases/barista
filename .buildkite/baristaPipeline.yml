@@ -1,36 +1,27 @@
 tasks:
   default:
-    shell_command:
-      trigger:
-        - test
-      disable: true
-      pre_cmd:
-      cmd:
-        - bazel build //...
-        - bazel test //...
-      post_cmd:
     build:
       trigger:
         - test
-      disable: false
       pre_cmd:
-        - ps -ef
+        - echo "Pre command"
         - ls -l
+        - ps -ef
+        - ls -l node_modules
       bazel_flags:
         - "--keep_going"
       bazel_cmd:
         - "//..."
       post_cmd:
-        - ps -ef | grep bazel
+        - echo "Post command"
     test:
-      parallel: 4
-      disable: false
       bazel_flags:
         - "--keep_going"
       bazel_cmd:
         - "//..."
   windows10:
     build:
+      disable: true
       trigger:
         - test
       bazel_flags:
