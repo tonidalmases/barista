@@ -8,6 +8,8 @@ tasks:
         - ls -l
         - ps -ef
         - ls -l node_modules || echo "not found"
+        - env
+        - echo $DOPS_SECRET || echo "DOPS_SECRET not found"
       bazel_flags:
         - "--keep_going"
       bazel_cmd:
