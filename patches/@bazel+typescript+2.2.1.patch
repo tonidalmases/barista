@@ -8,6 +8,6 @@ index fc1d6f7..9af2e92 100755
          "declarationDir": "/".join([workspace_path, outdir_path]),
 -        "stripInternal": True,
 +        "stripInternal": False,
- 
+
          # Embed source maps and sources in .js outputs
          "inlineSourceMap": True,
