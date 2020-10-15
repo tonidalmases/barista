@@ -17,6 +17,11 @@ if [[ "${BUILDKITE_BRANCH}" =~ $PULL_BRANCH_REGEX ]]; then
   exit 0
 fi
 
+if [ -z "${BUILDKITE}" ]; then
+  # no CI call
+  exit 0
+fi
+
 if [ -z "${BAZEL_REMOTE_CACHE_PASSWORD}" ]; then
   echo "Please specify the \"BAZEL_REMOTE_CACHE_PASSWORD\" environment variable when setting up remote " \
       "cache"
