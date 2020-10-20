@@ -21,7 +21,7 @@ tasks:
         - "//..."
   windows10:
     build:
-      disable: true
+      disable: false
       trigger:
         - test
       bazel_flags:
