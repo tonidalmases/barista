@@ -25,6 +25,6 @@ ng_module(
         "@npm//@angular/common",
         "@npm//@angular/core",
         "@npm//@angular/router",
-        "@npm//lodash-es",
+        "@npm//@types/lodash-es",
     ],
 )

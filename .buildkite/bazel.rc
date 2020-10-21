@@ -29,4 +29,9 @@ test --flaky_test_attempts=3
 
 # Set credentials for build cache enabling will be handled in the setup file
 build --enable_platform_specific_config
-build:windows --jobs 1 --local_ram_resources=HOST_RAM*0.5
+#build:windows --jobs 1 --local_ram_resources=HOST_RAM*0.5
+
+build --experimental_repository_cache_hardlinks
+common --isatty=0
+build --nolegacy_external_runfiles --incompatible_strict_action_env
+build --experimental_inprocess_symlink_creation --incompatible_no_implicit_file_export --incompatible_restrict_string_escapes
