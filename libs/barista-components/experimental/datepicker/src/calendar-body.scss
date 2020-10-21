@@ -1,4 +1,4 @@
-@import '../../core/src/style/variables';
+@import '../../../core/src/style/variables';
 
 :host {
   display: block;
@@ -15,6 +15,7 @@
   text-align: center;
   padding: 0 0 8px 0;
   width: 14%;
+  color: $gray-400;
 }
 
 .dt-calendar-table-cell {
@@ -46,4 +47,21 @@
 .dt-calendar-selected .dt-calendar-table-cell-inner {
   background-color: $turquoise-600;
   color: white;
+}
+
+:host-context(.dt-datepicker-panel-dark),
+:host-context(.dt-theme-dark) {
+  background-color: $gray-700;
+  color: $white;
+
+  .dt-calendar-table-cell:not(.dt-calendar-active) {
+    .dt-calendar-table-cell-inner {
+      border: none;
+    }
+  }
+
+  .dt-calendar-table-cell:not(.dt-calendar-selected):hover
+    .dt-calendar-table-cell-inner {
+    background: $gray-500;
+  }
 }

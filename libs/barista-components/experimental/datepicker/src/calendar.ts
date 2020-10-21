@@ -110,7 +110,7 @@ export class DtCalendar<D> implements AfterContentInit {
     private _changeDetectorRef: ChangeDetectorRef,
   ) {}
 
-  ngAfterContentInit() {
+  ngAfterContentInit(): void {
     this.activeDate = this.startAt || this._dateAdapter.today();
   }
 
@@ -128,7 +128,7 @@ export class DtCalendar<D> implements AfterContentInit {
     this._changeDetectorRef.markForCheck();
   }
 
-  _selectedValueChanged(value: D) {
+  _selectedValueChanged(value: D): void {
     this.selectedChange.emit(value);
   }
 }

@@ -15,30 +15,30 @@
  */
 
 import {
+  DOWN_ARROW,
+  ENTER,
+  LEFT_ARROW,
+  PAGE_DOWN,
+  PAGE_UP,
+  RIGHT_ARROW,
+  SPACE,
+  UP_ARROW,
+} from '@angular/cdk/keycodes';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  Output,
+  ViewEncapsulation,
+} from '@angular/core';
+import {
   DtDateAdapter,
   _readKeyCode,
 } from '@dynatrace/barista-components/core';
-import {
-  Component,
-  ViewEncapsulation,
-  ChangeDetectionStrategy,
-  Input,
-  ChangeDetectorRef,
-  EventEmitter,
-  Output,
-  ElementRef,
-} from '@angular/core';
 import { getValidDateOrNull } from './util';
-import {
-  UP_ARROW,
-  DOWN_ARROW,
-  LEFT_ARROW,
-  RIGHT_ARROW,
-  ENTER,
-  SPACE,
-  PAGE_UP,
-  PAGE_DOWN,
-} from '@angular/cdk/keycodes';
 
 const DAYS_PER_WEEK = 7;
 

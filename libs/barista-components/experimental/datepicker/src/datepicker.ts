@@ -15,48 +15,53 @@
  */
 
 import {
-  Component,
-  ViewEncapsulation,
-  ChangeDetectionStrategy,
-  ViewChild,
-  ElementRef,
-  Optional,
-  Inject,
-  ChangeDetectorRef,
-  Input,
-  Self,
-  Attribute,
-} from '@angular/core';
-import {
-  mixinDisabled,
-  mixinTabIndex,
-  CanDisable,
-  HasTabIndex,
-  dtSetUiTestAttribute,
-  DT_UI_TEST_CONFIG,
-  DtUiTestConfiguration,
-  mixinErrorState,
-  ErrorStateMatcher,
-  DtDateAdapter,
-} from '@dynatrace/barista-components/core';
-import { CdkConnectedOverlay } from '@angular/cdk/overlay';
-import {
-  trigger,
+  animate,
+  animateChild,
+  group,
+  query,
   state,
   style,
   transition,
-  group,
-  query,
-  animate,
-  animateChild,
+  trigger,
 } from '@angular/animations';
+import { CdkConnectedOverlay } from '@angular/cdk/overlay';
+import {
+  Attribute,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  Inject,
+  Input,
+  OnDestroy,
+  Optional,
+  Self,
+  ViewChild,
+  ViewEncapsulation,
+} from '@angular/core';
 import {
   ControlValueAccessor,
-  NgForm,
   FormGroupDirective,
   NgControl,
+  NgForm,
 } from '@angular/forms';
+import {
+  CanDisable,
+  DtDateAdapter,
+  dtSetUiTestAttribute,
+  DtUiTestConfiguration,
+  DT_UI_TEST_CONFIG,
+  ErrorStateMatcher,
+  HasTabIndex,
+  mixinDisabled,
+  mixinErrorState,
+  mixinTabIndex,
+} from '@dynatrace/barista-components/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { DtCalendar } from './calendar';
+import { DtTimeChangeEvent, _valueTo2DigitString } from './timeinput';
+import { DtTimepicker } from './timepicker';
 import { getValidDateOrNull } from './util';
 
 /**
@@ -160,7 +165,7 @@ export const _DtDatepickerBase = mixinTabIndex(
   ],
 })
 export class DtDatePicker<D> extends _DtDatepickerBase
-  implements ControlValueAccessor, CanDisable, HasTabIndex {
+  implements ControlValueAccessor, CanDisable, HasTabIndex, OnDestroy {
   /** Unique id of the element. */
   @Input()
   get id(): string {
@@ -203,6 +208,12 @@ export class DtDatePicker<D> extends _DtDatepickerBase
   // tslint:disable-next-line:no-any
   @Input() panelClass: string | string[] | Set<string> | { [key: string]: any };
 
+  /** Property that enables the timepicker, so that a time can be entered as well. */
+  @Input() isTimeEnabled: boolean;
+
+  /** Property that enables the range mode. */
+  @Input() isRangeEnabled: boolean;
+
   /** Whether or not the overlay panel is open. */
   get panelOpen(): boolean {
     return this._panelOpen;
@@ -214,11 +225,19 @@ export class DtDatePicker<D> extends _DtDatepickerBase
 
   @ViewChild(DtCalendar) _calendar: DtCalendar<D>;
 
+  @ViewChild(DtTimepicker) _timePicker: DtTimepicker;
+
   /** @internal Defines the positions the overlay can take relative to the button element. */
   _positions = OVERLAY_POSITIONS;
 
   /** @internal Whether the panel's animation is done. */
   _panelDoneAnimating = false;
+
+  /** @internal */
+  _hour: number;
+
+  /** @internal */
+  _minute: number;
 
   /** @internal `View -> model callback called when value changes` */
   _onChange: (value: Date) => void = () => {};
@@ -228,6 +247,10 @@ export class DtDatePicker<D> extends _DtDatepickerBase
 
   // REMOVE!!!!!
   _valueLabel = '';
+
+  _timeLabel = '';
+
+  private _destroy$ = new Subject<void>();
 
   constructor(
     private _dateAdapter: DtDateAdapter<D>,
@@ -248,6 +271,11 @@ export class DtDatePicker<D> extends _DtDatepickerBase
 
     // Force setter to be called in case id was not specified.
     this.id = this.id;
+  }
+
+  ngOnDestroy(): void {
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 
   /** Opens or closes the overlay panel. */
@@ -275,7 +303,7 @@ export class DtDatePicker<D> extends _DtDatepickerBase
     }
   }
 
-  /** Sets the select's value. Part of the ControlValueAccessor. */
+  /** Sets the datepicker's value. Part of the ControlValueAccessor. */
   writeValue(value: D): void {
     this.value = value;
   }
@@ -296,7 +324,7 @@ export class DtDatePicker<D> extends _DtDatepickerBase
     this._onTouched = fn;
   }
 
-  /** Disables the select. Part of the ControlValueAccessor. */
+  /** Disables the datepicker. Part of the ControlValueAccessor. */
   setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled;
     this._changeDetectorRef.markForCheck();
@@ -322,13 +350,20 @@ export class DtDatePicker<D> extends _DtDatepickerBase
     this._panelDoneAnimating = this.panelOpen;
     if (this.panelOpen) {
       this._calendar.focus();
+
+      if (this.isTimeEnabled) {
+        this._timePicker.timeChanges
+          .pipe(takeUntil(this._destroy$))
+          .subscribe((changed) => {
+            this._onTimeInputChange(changed);
+          });
+      }
     }
+
     this._changeDetectorRef.markForCheck();
   }
 
-  _handleKeydown(): void {}
-
-  _setSelectedValue(value: D) {
+  _setSelectedValue(value: D): void {
     this._value = value;
     this._valueLabel = value
       ? this._dateAdapter.format(value, {
@@ -338,5 +373,22 @@ export class DtDatePicker<D> extends _DtDatepickerBase
         })
       : '';
     this._changeDetectorRef.markForCheck();
+  }
+
+  _onTimeInputChange(event: DtTimeChangeEvent): void {
+    if (!event) {
+      return;
+    }
+
+    this._hour = event?.hour || 0;
+    this._minute = event?.minute || 0;
+
+    this._timeLabel = event?.value;
+  }
+
+  _isDarkMode(): boolean {
+    return this._elementRef.nativeElement.parentElement.classList.contains(
+      'dt-theme-dark',
+    );
   }
 }

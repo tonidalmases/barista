@@ -14,34 +14,35 @@
  * limitations under the License.
  */
 
-import { _valueTo2DigitString, _parseAndValidateInput } from './timeinput';
+import { _valueTo2DigitString, _tryParseInput } from './timeinput';
 
 describe('timeinput', () => {
   describe('_validateAndParseInput', () => {
     it('should return null if the provided value is null', () => {
-      expect(_parseAndValidateInput(null, 0, 23, null)).toBe(null);
-      expect(_parseAndValidateInput(null, 0, 23, 1)).toBe(null);
+      expect(_tryParseInput(null, 0, 23, null)).toBe(null);
+      expect(_tryParseInput(null, 0, 23, 1)).toBe(null);
     });
 
     it('should return the number value if it is valid number and in the min/max range', () => {
-      expect(_parseAndValidateInput(1, 0, 23, 1)).toBe(1);
+      expect(_tryParseInput(1, 0, 23, 1)).toBe(1);
     });
 
     it('should return the fallback value if the value is a valid number but not in the min/max range', () => {
-      expect(_parseAndValidateInput(24, 0, 23, 1)).toBe(1);
-      expect(_parseAndValidateInput(0, 1, 23, 1)).toBe(1);
+      expect(_tryParseInput(24, 0, 23, 1)).toBe(1);
+      expect(_tryParseInput(0, 1, 23, 1)).toBe(1);
     });
 
     it('should return the parsed number value if it is valid stringified number and in the min/max range', () => {
-      expect(_parseAndValidateInput('1', 0, 23, 1)).toBe(1);
+      expect(_tryParseInput('1', 0, 23, 1)).toBe(1);
     });
 
     it('should return the fallback value if the value is a valid stringified number but not in the min/max range', () => {
-      expect(_parseAndValidateInput('24', 0, 23, 1)).toBe(1);
+      expect(_tryParseInput('24', 0, 23, 2)).toBe(2);
     });
 
-    it('should return the fallback value if it is not a valid value', () => {
-      expect(_parseAndValidateInput('aa', 0, 23, 1)).toBe(1);
+    it('should return null if it is not a valid value', () => {
+      expect(_tryParseInput('aa', 0, 23, null)).toBe(null);
+      expect(_tryParseInput('aa', 0, 23, 1)).toBe(null);
     });
   });
 

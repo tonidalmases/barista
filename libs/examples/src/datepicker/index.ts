@@ -14,6 +14,5 @@
  * limitations under the License.
  */
 
-export * from './src/datepicker';
-export * from './src/datepicker-module';
-export * from './src/calendar';
+export * from './datepicker-dark-example/datepicker-dark-example';
+export * from './datepicker-examples.module';

@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
-export * from './date-adapter';
-export * from './native-date-adapter';
-export * from './date-module';
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'dt-example-datepicker-dark-component',
+  templateUrl: 'datepicker-dark-example.html',
+  styleUrls: ['datepicker-dark-example.scss'],
+})
+export class DtExampleDatepickerDark {
+  startAt = new Date(2020, 7, 31);
+  isDatepickerDisabled = false;
+  isTimepickerDisabled = false;
+  isDatepickerTimeEnabled = true;
+}

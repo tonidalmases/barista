@@ -15,9 +15,9 @@ ng_module_view_engine(
     ),
     angular_assets = [
         ":styles",
-        ":src/datepicker.html",
+        "src/datepicker.html",
     ],
-    module_name = "@dynatrace/barista-components/datepicker",
+    module_name = "@dynatrace/barista-components/experimental/datepicker",
     tsconfig = "tsconfig_lib",
     deps = [
         "//libs/barista-components/core:compile",

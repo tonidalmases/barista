@@ -1,13 +1,24 @@
-@import '../../core/src/style/variables';
+@import '../../../core/src/style/variables';
 
-$dt-datepicker-panel-width: 300px;
+$dt-datepicker-panel-min-width: 300px;
+$dt-datepicker-panel-max-width: 350px;
 
 :host {
   display: block;
 }
 
+.dt-datepicker-panel.dt-datepicker-panel-dark {
+  background-color: $gray-700;
+  color: $white;
+
+  ::ng-deep .dt-timeinput {
+    border: none;
+  }
+}
+
 .dt-datepicker-panel {
-  width: $dt-datepicker-panel-width;
+  min-width: $dt-datepicker-panel-min-width;
+  max-width: $dt-datepicker-panel-max-width;
   background: #ffffff;
   box-sizing: border-box;
   border: 1px solid $disabledcolor;
@@ -26,4 +37,14 @@ $dt-datepicker-panel-width: 300px;
 .dt-datepicker-content {
   overflow: hidden;
   padding: 8px;
+}
+
+.dt-calendar + .dt-timepicker {
+  margin-top: 10px;
+}
+
+.dt-theme-dark {
+  .dt-button {
+    color: $gray-200;
+  }
 }

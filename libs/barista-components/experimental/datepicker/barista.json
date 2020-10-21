@@ -4,6 +4,7 @@
   "postid": "datepicker",
   "identifier": "Da",
   "category": "components",
+  "public": true,
   "contributors": {
     "dev": [
       {
@@ -18,5 +19,6 @@
       }
     ]
   },
+  "properties": ["work in progress", "experimental"],
   "tags": ["datepicker", "component", "angular"]
 }

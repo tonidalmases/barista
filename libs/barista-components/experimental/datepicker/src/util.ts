@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ViewEncapsulation,
-} from '@angular/core';
+import { DtDateAdapter } from '@dynatrace/barista-components/core';
 
-@Component({
-  selector: 'dt-timepicker',
-  templateUrl: 'timepicker.html',
-  styleUrls: ['timepicker.scss'],
-  host: {
-    class: 'dt-timepicker',
-  },
-  encapsulation: ViewEncapsulation.Emulated,
-  preserveWhitespaces: false,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-})
-export class DtTimepicker {}
+/** Checks whether the provided object is a valid date an returns it; null otherwise. */
+export function getValidDateOrNull<D>(
+  dateAdapter: DtDateAdapter<D>,
+  obj: any,
+): D | null {
+  return dateAdapter.isDateInstance(obj) && dateAdapter.isValid(obj)
+    ? obj
+    : null;
+}

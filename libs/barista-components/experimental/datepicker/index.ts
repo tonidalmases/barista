@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
-export * from './date-adapter';
-export * from './native-date-adapter';
-export * from './date-module';
+export * from './src/datepicker';
+export * from './src/datepicker-module';
+export * from './src/calendar';
+export * from './src/calendar-body';
+export * from './src/timepicker';
+export * from './src/timeinput';

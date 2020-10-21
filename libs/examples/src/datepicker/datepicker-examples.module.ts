@@ -14,35 +14,32 @@
  * limitations under the License.
  */
 
+import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { DtButtonModule } from '@dynatrace/barista-components/button';
-import { DtDatePicker } from './datepicker';
-import { DtCalendar } from './calendar';
-import { OverlayModule } from '@angular/cdk/overlay';
-import { DtCalendarBody } from './calendar-body';
 import { DtIconModule } from '@dynatrace/barista-components/icon';
 import { DtInputModule } from '@dynatrace/barista-components/input';
-import { DtTimepicker } from './timepicker';
-import { DtTimeinput } from './timeinput';
-
-const COMPONENTS = [
-  DtDatePicker,
-  DtCalendar,
-  DtCalendarBody,
-  DtTimepicker,
-  DtTimeinput,
-];
+import { DtCheckboxModule } from '@dynatrace/barista-components/checkbox';
+import { DtThemingModule } from '@dynatrace/barista-components/theming';
+import { DtDatepickerModule } from '@dynatrace/barista-components/experimental/datepicker';
+import { DtExampleDatepickerDark } from '.';
+import { DtNativeDateModule } from '@dynatrace/barista-components/core';
 
 @NgModule({
   imports: [
     CommonModule,
+    FormsModule,
     OverlayModule,
     DtButtonModule,
     DtIconModule,
+    DtDatepickerModule,
     DtInputModule,
+    DtThemingModule,
+    DtCheckboxModule,
+    DtNativeDateModule,
   ],
-  exports: COMPONENTS,
-  declarations: COMPONENTS,
+  declarations: [DtExampleDatepickerDark],
 })
-export class DtDatepickerModule {}
+export class DtExamplesDatepickerModule {}

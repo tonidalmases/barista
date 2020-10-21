@@ -1459,7 +1459,7 @@
             ],
             "exclude": [
               "**/node_modules/**",
-              "!libs/barista-components/datepicker/**"
+              "!libs/barista-components/experimantal/datepicker/**"
             ]
           }
         },
@@ -1469,7 +1469,9 @@
             "stylelintConfig": ".stylelintrc",
             "reportFile": "dist/stylelint/report.xml",
             "exclude": ["**/node_modules/**"],
-            "files": ["libs/barista-components/datepicker/**/*.scss"]
+            "files": [
+              "libs/barista-components/experimental/datepicker/**/*.scss"
+            ]
           }
         }
       },

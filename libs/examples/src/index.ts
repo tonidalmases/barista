@@ -331,6 +331,7 @@ import { DtExampleTreeTableDefault } from './tree-table/tree-table-default-examp
 import { DtExampleTreeTableProblemIndicator } from './tree-table/tree-table-problem-indicator-example/tree-table-problem-indicator-example';
 import { DtExampleTreeTableSimple } from './tree-table/tree-table-simple-example/tree-table-simple-example';
 import { DtExampleComboboxCustomOptionHeight } from './combobox/combobox-custom-option-height-example/combobox-custom-option-height-example';
+import { DtExampleDatepickerDark } from './datepicker';
 
 export { DtExamplesModule } from './examples.module';
 export { DtAlertExamplesModule } from './alert/alert-examples.module';
@@ -395,6 +396,7 @@ export { DtToastExamplesModule } from './toast/toast-examples.module';
 export { DtToggleButtonGroupExamplesModule } from './toggle-button-group/toggle-button-group-examples.module';
 export { DtExamplesTopBarNavigationModule } from './top-bar-navigation/top-bar-navigation-examples.module';
 export { DtExamplesTreeTableModule } from './tree-table/tree-table-examples.module';
+export { DtExamplesDatepickerModule } from './datepicker/datepicker-examples.module';
 export {
   DtExampleAlertDarkError,
   DtExampleAlertDark,
@@ -703,6 +705,7 @@ export {
   DtExampleTreeTableDefault,
   DtExampleTreeTableProblemIndicator,
   DtExampleTreeTableSimple,
+  DtExampleDatepickerDark,
 };
 
 export const EXAMPLES_MAP = new Map<string, Type<unknown>>([
@@ -819,6 +822,7 @@ export const EXAMPLES_MAP = new Map<string, Type<unknown>>([
   ['DtExampleDrawerNested', DtExampleDrawerNested],
   ['DtExampleDrawerOver', DtExampleDrawerOver],
   ['DtExampleDrawerTableDefault', DtExampleDrawerTableDefault],
+  ['DtExampleDatepickerDark', DtExampleDatepickerDark],
   ['DtExampleCustomEmptyStateTable', DtExampleCustomEmptyStateTable],
   ['DtExampleCustomEmptyState', DtExampleCustomEmptyState],
   ['DtExampleEmptyStateDefault', DtExampleEmptyStateDefault],
