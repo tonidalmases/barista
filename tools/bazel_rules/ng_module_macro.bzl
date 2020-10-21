@@ -21,7 +21,7 @@ def ng_module(deps = [], **kwargs):
 
     ts_library(
         compiler = "//tools/bazel_rules:tsc_wrapped_with_angular",
-        supports_workers = True,
+        supports_workers = False,
         use_angular_plugin = True,
         deps = ["@npm//@angular/compiler-cli", "@npm//tslib"] + deps,
         **kwargs
