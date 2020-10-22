@@ -45,13 +45,13 @@ http_archive(
 ###########################################
 # Npm Install and Typescript Sass support #
 ###########################################
-load("@build_bazel_rules_nodejs//:index.bzl", "check_bazel_version", "npm_install", "yarn_install")
+load("@build_bazel_rules_nodejs//:index.bzl", "check_bazel_version", "npm_install")
 
 # The minimum bazel version to use with this repo is v3.1.0.
 check_bazel_version("3.1.0")
 
 # Install all dependencies with npm
-yarn_install(
+npm_install(
     name = "npm",
     data = [
         "//:patches/@angular+bazel+10.0.6.patch",
@@ -62,7 +62,7 @@ yarn_install(
         "//:view-engine-tsconfig.json"
     ],
     package_json = "//:package.json",
-    yarn_lock = "//:yarn.lock",
+    package_lock_json = "//:package-lock.json",
     quiet = True,
     symlink_node_modules = True,
 )
