@@ -34,7 +34,6 @@ import {
   EventEmitter,
   Input,
   Output,
-  SimpleChanges,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
@@ -75,12 +74,6 @@ export class DtTimeInput {
     }
 
     this._hour = value;
-    // this._hour = _tryParseHourInput(value, this._hour);
-    // this._changeDetectorRef.detectChanges();
-    console.log(`parsed hour ${this._hour}`);
-    // this._emitTimeChangeEvent();
-    // this._handleMinuteFocusSwitch();
-    // this._tryUpdateInputElementValues();
     this._changeDetectorRef.markForCheck();
   }
   private _hour: number | null = null;
@@ -95,10 +88,6 @@ export class DtTimeInput {
     }
 
     this._minute = value;
-    // this._minute = _tryParseMinutesInput(value, this._minute);
-    // this._emitTimeChangeEvent();
-    // this._handleHourFocusSwitch();
-    // this._tryUpdateInputElementValues();
     this._changeDetectorRef.markForCheck();
   }
   private _minute: number | null = null;
@@ -129,14 +118,6 @@ export class DtTimeInput {
 
   constructor(private _changeDetectorRef: ChangeDetectorRef) {}
 
-  ngDoCheck(): void {
-    console.log(`ngDoCheck hour ${this._hour}`);
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    console.log(`ngOnChanges ${changes}`);
-  }
-
   /**
    * @internal
    * Emits the `time change` event.
@@ -147,48 +128,12 @@ export class DtTimeInput {
     this.timeChanges.emit(event);
   }
 
-  // /** @internal */
-  _focusMinutes(): void {
-    this._minuteInput.nativeElement.focus();
-  }
-
-  // /** @internal */
-  // _focusHours(): void {
-  //   // if (this._hourInput) {
-  //   this._hourInput.nativeElement.focus();
-  //   // }
-  // }
-
-  // /** @internal */
-  _onHourChange(value: number | null): void {
-    this.hour = value;
-    console.log('hour changed', value);
-    // this._emitTimeChangeEvent();
-  }
-
-  // /** @internal */
-  // _minuteChanged(value: number | null): void {
-  //   console.log('minute changed', value);
-  //   this.minute = value;
-  //   // this._emitTimeChangeEvent();
-  // }
-
-  _handleHourFocusSwitch(): void {
-    // if (
-    //   this._hasMininmumTwoDigits(this._minute) &&
-    //   !this._hasMininmumTwoDigits(this._hour)
-    // ) {
-    //   this._focusHours();
-    // }
-  }
-
   _onHourKeyUp(): void {
-    // check if hour has focus
     if (
-      this._hasMininmumTwoDigits(this._hour) &&
-      !this._hasMininmumTwoDigits(this._minute)
+      _hasMininmumTwoDigits(this._hour) &&
+      !_hasMininmumTwoDigits(this._minute)
     ) {
-      this._focusMinutes();
+      this._minuteInput.nativeElement.focus();
     }
   }
 
@@ -198,37 +143,14 @@ export class DtTimeInput {
     }
   }
 
-  // get _handleHourInput(): string {
-  //   console.log(this._hourInput);
-  //   this._hour = _tryParseHourInput(this.hour, this._hour);
-  //   this._handleMinuteFocusSwitch();
-  //   this._tryUpdateInputElementValues();
-  //   this._emitTimeChangeEvent();
-  //   this._changeDetectorRef.markForCheck();
-  //   return this.formattedHour;
-  // }
-  // set _handleHourInput(value: string) {
-  //   this.hour = value as any;
-  // }
-
-  // _handleMinuteInput(): void {
-  //   this._handleHourFocusSwitch();
-  //   this._tryUpdateInputElementValues();
-  // }
-
-  /** @internal */
-  _hasMininmumTwoDigits(input: number | null): boolean {
-    return input !== null && input >= 10;
-  }
-
   /** @internal Handler for the users input events. */
   _handleInput(event: KeyboardEvent, inputType: 'hour' | 'minute'): void {
     const keyCode = _readKeyCode(event);
     const validatorFn =
-      inputType === 'hour' ? _isValidHourInput : _isValidMinuteInput;
+      inputType === 'hour' ? _isValidHour : _isValidMinuteInput;
     // This is the value before the keydown event is registered
     const value = (event.currentTarget as HTMLInputElement).value;
-    const valid = this._isSpecialCharAllowed(keyCode) || validatorFn(value);
+    const valid = _isSpecialCharAllowed(keyCode) || validatorFn(value);
     if (valid) {
       const parsedValue = parseInt(value, 10);
       if (inputType === 'hour') {
@@ -247,56 +169,10 @@ export class DtTimeInput {
 
     this._changeDetectorRef.markForCheck();
   }
-
-  _isSpecialCharAllowed(keyCode: number): boolean {
-    const allowedSpecialChars = [
-      ENTER,
-      BACKSPACE,
-      TAB,
-      LEFT_ARROW,
-      RIGHT_ARROW,
-      UP_ARROW,
-      DOWN_ARROW,
-      DELETE,
-    ];
-
-    return allowedSpecialChars.includes(keyCode);
-  }
-
-  // private _tryUpdateInputElementValues(): void {
-  //   this._tryUpdateHourInputElementValue();
-  //   this._tryUpdateMinutesInputElementValue();
-  // }
-
-  // private _tryUpdateHourInputElementValue(): void {
-  //   // if (this._hourInput) {
-  //   this._hourInput.nativeElement.value = _valueTo2DigitString(this.hour || 0);
-  //   // }
-  // }
-
-  // private _tryUpdateMinutesInputElementValue(): void {
-  //   // if (this._minuteInput) {
-  //   this._minuteInput.nativeElement.value = _valueTo2DigitString(this.minute || 0);
-  //   // }
-  // }
-
-  // get formattedHour(): string {
-  //   return isDefined(this.hour) ? `${_valueTo2DigitString(this.hour)}` : '';
-  // }
-  // set formattedHour(value: string) {
-  //   this.hour = value as any;
-  // }
-
-  // get formattedMinute(): string {
-  //   return isDefined(this.minute) ? `${_valueTo2DigitString(this.minute)}` : '';
-  // }
-  // set formattedMinute(value: string) {
-  //   this.minute = value as any;
-  // }
 }
 
 /** @internal */
-export function _isValidHourInput(value: any): boolean {
+export function _isValidHour(value: any): boolean {
   if (!isNumberLike(value)) {
     return false;
   }
@@ -315,45 +191,26 @@ export function _isValidMinuteInput(value: any): boolean {
   return parsedValue >= MIN_MINUTES && parsedValue <= MAX_MINUTES;
 }
 
-// /** @internal */
-// export function _tryParseHourInput(
-//   value: any,
-//   fallbackValue: number | null,
-// ): number | null {
-//   return _tryParseInput(value, MIN_HOURS, MAX_HOURS, fallbackValue);
-// }
+/** @internal */
+export function _hasMininmumTwoDigits(input: number | null): boolean {
+  return input !== null && input >= 10;
+}
 
-// /** @internal */
-// export function _tryParseMinutesInput(
-//   value: any,
-//   fallbackValue: number | null,
-// ): number | null {
-//   return _tryParseInput(value, MIN_MINUTES, MAX_MINUTES, fallbackValue);
-// }
+export function _isSpecialCharAllowed(keyCode: number): boolean {
+  const allowedSpecialChars = [
+    ENTER,
+    BACKSPACE,
+    TAB,
+    LEFT_ARROW,
+    RIGHT_ARROW,
+    UP_ARROW,
+    DOWN_ARROW,
+    DELETE,
+  ];
 
-// /** @internal */
-// export function _tryParseInput(
-//   value: any,
-//   min: number,
-//   max: number,
-//   fallbackValue: number | null,
-// ): number | null {
-//   if (value == null) {
-//     return null;
-//   }
+  return allowedSpecialChars.includes(keyCode);
+}
 
-//   if (isString(value) && NUMBER_REGEX.test(value)) {
-//     value = parseInt(value, 10);
-//   }
-
-//   if (isNumber(value) && value >= min && value <= max) {
-//     return value;
-//   }
-
-//   return isNumber(fallbackValue) ? fallbackValue : null;
-// }
-
-//pipe
 /** @internal */
 export function _valueTo2DigitString(value: number): string {
   return value < 10 ? `0${value}` : value.toString();
