@@ -1446,16 +1446,16 @@
     },
     "datepicker": {
       "projectType": "library",
-      "root": "libs/barista-components/datepicker",
-      "sourceRoot": "libs/barista-components/datepicker/src",
+      "root": "libs/barista-components/experimental/datepicker",
+      "sourceRoot": "libs/barista-components/experimental/datepicker/src",
       "prefix": "dt",
       "architect": {
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "libs/barista-components/datepicker/tsconfig.lib.json",
-              "libs/barista-components/datepicker/tsconfig.spec.json"
+              "libs/barista-components/experimental/datepicker/tsconfig.lib.json",
+              "libs/barista-components/experimental/datepicker/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**",

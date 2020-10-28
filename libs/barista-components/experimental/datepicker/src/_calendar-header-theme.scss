@@ -1,5 +1,5 @@
-:host-context(.dt-datepicker-panel-dark),
-:host-context(.dt-theme-dark) {
+:host-context(.dt-theme-dark),
+:host(.dt-theme-dark) {
   background-color: $gray-700;
   color: $white;
 

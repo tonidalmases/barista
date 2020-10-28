@@ -17,7 +17,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'dt-example-datepicker-dark-component',
+  selector: 'dt-example-datepicker-dark',
   templateUrl: 'datepicker-dark-example.html',
   styleUrls: ['datepicker-dark-example.scss'],
 })

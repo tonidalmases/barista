@@ -13,33 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { OverlayModule } from '@angular/cdk/overlay';
-import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DtButtonModule } from '@dynatrace/barista-components/button';
-import { DtIconModule } from '@dynatrace/barista-components/icon';
-import { DtInputModule } from '@dynatrace/barista-components/input';
 import { DtCheckboxModule } from '@dynatrace/barista-components/checkbox';
-import { DtThemingModule } from '@dynatrace/barista-components/theming';
-import { DtDatepickerModule } from '@dynatrace/barista-components/experimental/datepicker';
-import { DtExampleDatepickerDark } from '.';
 import { DtNativeDateModule } from '@dynatrace/barista-components/core';
+import { DtDatepickerModule } from '@dynatrace/barista-components/experimental/datepicker';
+import { DtThemingModule } from '@dynatrace/barista-components/theming';
+import {
+  DT_DEFAULT_DARK_THEMING_CONFIG,
+  DT_OVERLAY_THEMING_CONFIG,
+} from './../../../barista-components/core/src/overlay/overlay-theming-configuration';
+import { DtExampleDatepickerDark } from './datepicker-dark-example/datepicker-dark-example';
+import { DtExampleDatepickerDefault } from './datepicker-default-example/datepicker-default-example';
 
 @NgModule({
   imports: [
-    CommonModule,
     FormsModule,
-    OverlayModule,
-    DtButtonModule,
-    DtIconModule,
     DtDatepickerModule,
-    DtInputModule,
     DtThemingModule,
     DtCheckboxModule,
     DtNativeDateModule,
   ],
-  declarations: [DtExampleDatepickerDark],
+  declarations: [DtExampleDatepickerDark, DtExampleDatepickerDefault],
+  providers: [
+    {
+      provide: DT_OVERLAY_THEMING_CONFIG,
+      useValue: DT_DEFAULT_DARK_THEMING_CONFIG,
+    },
+  ],
 })
 export class DtExamplesDatepickerModule {}

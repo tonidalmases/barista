@@ -36,6 +36,7 @@ import {
   OnDestroy,
   Optional,
   Self,
+  SkipSelf,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
@@ -48,8 +49,11 @@ import {
 import {
   CanDisable,
   DtDateAdapter,
+  DtOverlayThemingConfiguration,
+  dtSetOverlayThemeAttribute,
   dtSetUiTestAttribute,
   DtUiTestConfiguration,
+  DT_OVERLAY_THEMING_CONFIG,
   DT_UI_TEST_CONFIG,
   ErrorStateMatcher,
   HasTabIndex,
@@ -57,10 +61,11 @@ import {
   mixinErrorState,
   mixinTabIndex,
 } from '@dynatrace/barista-components/core';
+import { DtTheme } from '@dynatrace/barista-components/theming';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DtCalendar } from './calendar';
-import { DtTimeChangeEvent, _valueTo2DigitString } from './timeinput';
+import { DtTimeChangeEvent } from './timeinput';
 import { DtTimepicker } from './timepicker';
 import { getValidDateOrNull } from './util';
 
@@ -227,17 +232,27 @@ export class DtDatePicker<D> extends _DtDatepickerBase
 
   @ViewChild(DtTimepicker) _timePicker: DtTimepicker;
 
+  @ViewChild('panel') _panel: ElementRef;
+
   /** @internal Defines the positions the overlay can take relative to the button element. */
   _positions = OVERLAY_POSITIONS;
 
   /** @internal Whether the panel's animation is done. */
   _panelDoneAnimating = false;
 
-  /** @internal */
-  _hour: number;
+  /** @internal Hour */
+  get hour(): number {
+    return this._hour === 0 ? null : this._hour;
+  }
 
-  /** @internal */
-  _minute: number;
+  private _hour;
+
+  /** @internal Minute */
+  get minute(): number {
+    return this._minute === 0 ? null : this._minute;
+  }
+
+  private _minute;
 
   /** @internal `View -> model callback called when value changes` */
   _onChange: (value: Date) => void = () => {};
@@ -245,9 +260,14 @@ export class DtDatePicker<D> extends _DtDatepickerBase
   /** @internal `View -> model callback called when select has been touched` */
   _onTouched = () => {};
 
-  // REMOVE!!!!!
+  /**
+   * @internal Label used for displaying the date.
+   */
   _valueLabel = '';
 
+  /**
+   * @internal Label used for displaying the time.
+   */
   _timeLabel = '';
 
   private _destroy$ = new Subject<void>();
@@ -259,8 +279,11 @@ export class DtDatePicker<D> extends _DtDatepickerBase
     readonly defaultErrorStateMatcher: ErrorStateMatcher,
     @Optional() readonly parentForm: NgForm,
     @Optional() readonly parentFormGroup: FormGroupDirective,
+    @Optional() @SkipSelf() private _theme: DtTheme,
     @Self() @Optional() readonly ngControl: NgControl,
     @Attribute('tabindex') tabIndex: string,
+    @Inject(DT_OVERLAY_THEMING_CONFIG)
+    private readonly _themeConfig: DtOverlayThemingConfiguration,
     @Optional()
     @Inject(DT_UI_TEST_CONFIG)
     private readonly _config?: DtUiTestConfiguration,
@@ -348,21 +371,51 @@ export class DtDatePicker<D> extends _DtDatepickerBase
    */
   _onFadeInDone(): void {
     this._panelDoneAnimating = this.panelOpen;
+
     if (this.panelOpen) {
       this._calendar.focus();
 
       if (this.isTimeEnabled) {
-        this._timePicker.timeChanges
-          .pipe(takeUntil(this._destroy$))
-          .subscribe((changed) => {
-            this._onTimeInputChange(changed);
-          });
+        this._handleTimepickerValues();
       }
     }
 
     this._changeDetectorRef.markForCheck();
   }
 
+  /**
+   * @internal Handle timepicker hour and minute values.
+   */
+  _handleTimepickerValues(): void {
+    this._timePicker.timeChanges
+      .pipe(takeUntil(this._destroy$))
+      .subscribe((changed) => {
+        this._handleTimeInputChange(changed);
+      });
+
+    this._timePicker._timeInput.hour = this.hour;
+    this._timePicker._timeInput.minute = this.minute;
+  }
+
+  _getTimepickerVisibility(): boolean {
+    return this.isTimeEnabled && this._panelDoneAnimating;
+  }
+
+  /**
+   * @internal Add a theming class to the overlay only when dark mode is enabled
+   */
+  _onFadeInStart(): void {
+    if (this.panelOpen && this._theme.variant === 'dark')
+      dtSetOverlayThemeAttribute(
+        this._panel.nativeElement,
+        this._elementRef.nativeElement,
+        this._themeConfig,
+      );
+  }
+
+  /**
+   * @internal Set the selected date.
+   */
   _setSelectedValue(value: D): void {
     this._value = value;
     this._valueLabel = value
@@ -375,20 +428,23 @@ export class DtDatePicker<D> extends _DtDatepickerBase
     this._changeDetectorRef.markForCheck();
   }
 
-  _onTimeInputChange(event: DtTimeChangeEvent): void {
+  /**
+   * @internal Handle the new values when there are time changes.
+   */
+  _handleTimeInputChange(event: DtTimeChangeEvent): void {
     if (!event) {
       return;
     }
 
     this._hour = event?.hour || 0;
     this._minute = event?.minute || 0;
-
-    this._timeLabel = event?.value;
+    this._timeLabel = event?.format();
   }
 
-  _isDarkMode(): boolean {
-    return this._elementRef.nativeElement.parentElement.classList.contains(
-      'dt-theme-dark',
-    );
+  /**
+   * @internal Handle the new values when thre are time changes.
+   */
+  _isTimeLabelAvailable(): boolean {
+    return this.isTimeEnabled && (this._hour !== 0 || this._minute !== 0);
   }
 }

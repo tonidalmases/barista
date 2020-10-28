@@ -1,35 +1,48 @@
-<div class="dt-timeinput-input">
-  <input
-    dtInput
-    #hours
-    type="number"
-    maxlength="2"
-    placeholder="hh"
-    inputmode="numeric"
-    [(ngModel)]="hour"
-    [disabled]="disabled"
-    (keydown)="_handleKeydown($event)"
-    pattern="2[0-3]|[01]?[0-9]"
-    aria-label="Please insert the hour"
-  />
-</div>
-<span
-  class="dt-timeinput-separator"
-  [ngClass]="{ 'dt-timeinput-separator-disabled': disabled }"
-  >:</span
+<div
+  class="dt-timeinput-wrapper"
+  cdkMonitorSubtreeFocus
+  (cdkFocusChange)="_onInputBlur($event)"
 >
-<div class="dt-timeinput-input">
-  <input
-    dtInput
-    #minutes
-    type="number"
-    maxlength="2"
-    placeholder="mm"
-    inputmode="numeric"
-    [(ngModel)]="minute"
-    [disabled]="disabled"
-    (keydown)="_handleKeydown($event)"
-    pattern="[0-5]?[0-9]"
-    aria-label="Please insert the minutes"
-  />
+  <div class="dt-timeinput-input">
+    <input
+      dtInput
+      #hours
+      type="number"
+      autocomplete="off"
+      maxlength="2"
+      min="0"
+      max="23"
+      placeholder="hh"
+      inputmode="numeric"
+      [ngModel]="hour"
+      (input)="_handleInput($event, 'hour')"
+      [disabled]="disabled"
+      (keyup)="_onHourKeyUp()"
+      pattern="2[0-3]|[01]?[0-9]"
+      aria-label="Please insert the hour"
+    />
+  </div>
+  <span
+    class="dt-timeinput-separator"
+    [ngClass]="{ 'dt-timeinput-separator-disabled': disabled }"
+    >:</span
+  >
+  <div class="dt-timeinput-input">
+    <input
+      dtInput
+      #minutes
+      type="number"
+      autocomplete="off"
+      min="0"
+      max="59"
+      maxlength="2"
+      placeholder="mm"
+      inputmode="numeric"
+      [ngModel]="minute"
+      (input)="_handleInput($event, 'minute')"
+      [disabled]="disabled"
+      pattern="[0-5]?[0-9]"
+      aria-label="Please insert the minutes"
+    />
+  </div>
 </div>

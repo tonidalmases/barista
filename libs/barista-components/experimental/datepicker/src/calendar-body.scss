@@ -1,4 +1,5 @@
 @import '../../../core/src/style/variables';
+@import './calendar-body-theme';
 
 :host {
   display: block;
@@ -47,21 +48,4 @@
 .dt-calendar-selected .dt-calendar-table-cell-inner {
   background-color: $turquoise-600;
   color: white;
-}
-
-:host-context(.dt-datepicker-panel-dark),
-:host-context(.dt-theme-dark) {
-  background-color: $gray-700;
-  color: $white;
-
-  .dt-calendar-table-cell:not(.dt-calendar-active) {
-    .dt-calendar-table-cell-inner {
-      border: none;
-    }
-  }
-
-  .dt-calendar-table-cell:not(.dt-calendar-selected):hover
-    .dt-calendar-table-cell-inner {
-    background: $gray-500;
-  }
 }

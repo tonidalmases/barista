@@ -30,12 +30,6 @@ import { switchMap, take } from 'rxjs/operators';
 import { DtTimeChangeEvent, DtTimeInput } from './timeinput';
 
 /** @internal */
-export type DtTimePickerChange = [
-  DtTimeChangeEvent | null,
-  DtTimeChangeEvent | null,
-];
-
-/** @internal */
 @Component({
   selector: 'dt-timepicker',
   templateUrl: 'timepicker.html',
@@ -48,7 +42,7 @@ export type DtTimePickerChange = [
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DtTimepicker {
-  /** Label used for displaying the date. */
+  /** Label used for displaying the date in range mode. */
   @Input()
   valueLabel: any;
 

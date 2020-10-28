@@ -96,6 +96,8 @@ import {
   DT_DEFAULT_UI_TEST_CONFIG,
   DT_UI_TEST_CONFIG,
   DtNativeDateModule,
+  DT_OVERLAY_THEMING_CONFIG,
+  DT_DEFAULT_DARK_THEMING_CONFIG,
 } from '@dynatrace/barista-components/core';
 import { ComboboxDemo } from './combobox/combobox-demo.component';
 
@@ -187,6 +189,10 @@ export class NoopRouteComponent {}
     Location,
     { provide: LocationStrategy, useClass: PathLocationStrategy },
     { provide: DT_UI_TEST_CONFIG, useValue: DT_DEFAULT_UI_TEST_CONFIG },
+    {
+      provide: DT_OVERLAY_THEMING_CONFIG,
+      useValue: DT_DEFAULT_DARK_THEMING_CONFIG,
+    },
     { provide: STEPPER_GLOBAL_OPTIONS, useValue: { showError: true } },
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

@@ -131,4 +131,11 @@ export class DtCalendar<D> implements AfterContentInit {
   _selectedValueChanged(value: D): void {
     this.selectedChange.emit(value);
   }
+
+  _setTodayDate(): void {
+    this.selected = this._dateAdapter.today();
+    this.activeDate = this.selected;
+    this._selectedValueChanged(this.selected);
+    this._changeDetectorRef.markForCheck();
+  }
 }

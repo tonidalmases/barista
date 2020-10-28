@@ -2,14 +2,19 @@
 
 ## Imports
 
-You have to import the `DtDatepickerModule` to use the `dt-datepicker`.
+You have to import the `DtDatepickerModule` and `DtNativeDateModule` (in case
+you would like to use the native date adapter) to use the `dt-datepicker`. The
+DtNativeDateModule is based off the functionality available in JavaScript's
+native Date object, which is limited when it comes to setting the parse format.
+Therefore, if necessary, a custom DateAdapter can be implemented in order to
+handle the formatting/parsing library of your choice.
 
 ```typescript
 import { NgModule } from '@angular/core';
 import { DtDatepickerModule } from '@dynatrace/barista-components/experimental/datepicker';
 
 @NgModule({
-  imports: [DtDatepickerModule],
+  imports: [DtDatepickerModule, DtNativeDateModule],
 })
 class MyModule {}
 ```
@@ -30,8 +35,9 @@ class MyModule {}
 
 The following methods are on the `DtDatepicker` class:
 
-| Name     | Description            | Return value |
-| -------- | ---------------------- | ------------ |
-| `open`   | Opens the datepicker   | `void`       |
-| `close`  | Closes the datepicker  | `void`       |
-| `toggle` | Toggles the datepicker | `void`       |
+| Name        | Description                             | Return value |
+| ----------- | --------------------------------------- | ------------ |
+| `open`      | Opens the datepicker                    | `void`       |
+| `close`     | Closes the datepicker                   | `void`       |
+| `toggle`    | Toggles the datepicker                  | `void`       |
+| `panelOpen` | Returns the open or closed panel state. | `boolean`    |

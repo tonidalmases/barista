@@ -1,5 +1,5 @@
 @import '../../../core/src/style/colors';
-@import './calendar-theme';
+@import './calendar-header-theme';
 
 :host {
   display: block;
@@ -33,4 +33,8 @@
 
 .dt-calendar-header-button-next-year ::ng-deep svg {
   transform: rotate(-90deg);
+}
+
+.dt-calendar-body + .dt-button {
+  margin-top: 10px;
 }

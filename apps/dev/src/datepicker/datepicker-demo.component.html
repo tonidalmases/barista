@@ -27,9 +27,9 @@
 
 <dt-checkbox [(ngModel)]="isTimepickerDisabled">Disabled</dt-checkbox>
 
-<h2>Full Dark Mode Datepicker</h2>
-
 <div dtTheme=":dark" class="dt-example-dark">
+  <h2>Full Dark Mode Datepicker</h2>
+
   <dt-datepicker
     [startAt]="startAt"
     [disabled]="isDarkDatepickerDisabled"
@@ -39,24 +39,17 @@
   <dt-checkbox [(ngModel)]="isDarkDatepickerTimeEnabled"
     >Enabled Time Mode</dt-checkbox
   >
-</div>
 
-<h2>Dark Mode Calendar</h2>
+  <h2>Dark Mode Calendar</h2>
 
-<div dtTheme=":dark">
   <dt-calendar [startAt]="startAt"></dt-calendar>
-</div>
 
-<h2>Dark Mode Calendar Body Only</h2>
+  <h2>Dark Mode Calendar Body Only</h2>
 
-<dt-calendar-body
-  dtTheme=":dark"
-  class="dt-example-dark"
-  [activeDate]="startAt"
-></dt-calendar-body>
+  <dt-calendar-body [activeDate]="startAt"></dt-calendar-body>
 
-<h2>Dark Mode Timepicker</h2>
-<div dtTheme=":dark" class="dt-example-dark">
+  <h2>Dark Mode Timepicker</h2>
+
   <dt-timepicker
     dtTheme=":dark"
     [disabled]="isDarkTimepickerDisabled"

@@ -323,6 +323,7 @@ import {
   DtExampleTreeTableSimple,
   DtExampleComboboxCustomOptionHeight,
   DtExampleDatepickerDark,
+  DtExampleDatepickerDefault
 } from '@dynatrace/examples';
 
 // The Routing Module replaces the routing configuration in the root or feature module.
@@ -581,6 +582,7 @@ const ROUTES: Routes = [
   { path: 'drawer-nested-example', component: DtExampleDrawerNested },
   { path: 'drawer-over-example', component: DtExampleDrawerOver },
   { path: 'datepicker-dark-example', component: DtExampleDatepickerDark},
+  { path: 'datepicker-default-example', component: DtExampleDatepickerDefault},
   {
     path: 'drawer-table-default-example',
     component: DtExampleDrawerTableDefault,

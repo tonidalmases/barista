@@ -176,4 +176,4 @@ ng g ./dist/libs/workspace:dt-example --name={example-name} --component={compone
 ```
 
 More information about shipped schematics can be found
-[here](./tools/schematics/dt-component-example/README.md).
+[here](./libs/workspace/src/schematics/dt-component-example/README.md).

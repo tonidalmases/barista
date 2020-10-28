@@ -445,6 +445,10 @@ export const DT_DEMOS_EXAMPLE_NAV_ITEMS = [
         name: 'datepicker-dark-example',
         route: '/datepicker-dark-example',
       },
+      {
+        name: 'datepicker-default-example',
+        route: '/datepicker-default-example',
+      },
     ],
   },
   {

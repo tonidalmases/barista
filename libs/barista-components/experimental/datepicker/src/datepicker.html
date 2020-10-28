@@ -9,7 +9,7 @@
   #origin="cdkOverlayOrigin"
 >
   {{ _valueLabel || 'Select date' }}
-  <span *ngIf="isTimeEnabled">
+  <span *ngIf="_isTimeLabelAvailable()">
     {{ _timeLabel }}
   </span>
 </button>
@@ -30,13 +30,13 @@
     #panel
     class="dt-datepicker-panel"
     [class.dt-datepicker-panel-done-animating]="_panelDoneAnimating"
-    [class.dt-datepicker-panel-dark]="_isDarkMode()"
     [ngClass]="panelClass"
     [@transformPanel]="'showing'"
   >
     <div
       class="dt-datepicker-content"
       [@fadeInContent]="'showing'"
+      (@fadeInContent.start)="_onFadeInStart()"
       (@fadeInContent.done)="_onFadeInDone()"
     >
       <dt-calendar
@@ -47,8 +47,6 @@
       <dt-timepicker
         *ngIf="isTimeEnabled"
         [valueLabel]="_valueLabel"
-        [hour]="_hour"
-        [minute]="_minute"
       ></dt-timepicker>
     </div>
   </div>
