@@ -15,10 +15,10 @@
       placeholder="hh"
       inputmode="numeric"
       [ngModel]="hour"
-      (input)="_handleInput($event, 'hour')"
+      (input)="_handleHourInput($event)"
+      (keydown)="_handleKeydown($event)"
       [disabled]="disabled"
       (keyup)="_onHourKeyUp()"
-      pattern="2[0-3]|[01]?[0-9]"
       aria-label="Please insert the hour"
     />
   </div>
@@ -39,9 +39,9 @@
       placeholder="mm"
       inputmode="numeric"
       [ngModel]="minute"
-      (input)="_handleInput($event, 'minute')"
+      (input)="_handleMinuteInput($event)"
+      (keydown)="_handleKeydown($event)"
       [disabled]="disabled"
-      pattern="[0-5]?[0-9]"
       aria-label="Please insert the minutes"
     />
   </div>

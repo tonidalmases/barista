@@ -14,42 +14,43 @@
  * limitations under the License.
  */
 
-import { _isValidHourInput, _valueTo2DigitString } from './timeinput';
+import { isValidHour, valueTo2DigitString } from './timeinput';
 
 describe('timeinput', () => {
   describe('_validateAndParseInput', () => {});
 
-  describe('_valueTo2DigitString', () => {
+  describe('valueTo2DigitString', () => {
     it('should cast a number value to string', () => {
-      expect(_valueTo2DigitString(20)).toBe('20');
+      expect(valueTo2DigitString(20)).toBe('20');
     });
 
     it('should prepend zeros for numbers smaller than 10', () => {
-      expect(_valueTo2DigitString(8)).toBe('08');
-      expect(_valueTo2DigitString(0)).toBe('00');
+      expect(valueTo2DigitString(8)).toBe('08');
+      expect(valueTo2DigitString(0)).toBe('00');
     });
   });
 
   describe('isValidHour', () => {
     it('should return true with a integer between 0 and 23', () => {
-      expect(_isValidHourInput(0)).toBeTruthy();
-      expect(_isValidHourInput(12)).toBeTruthy();
-      expect(_isValidHourInput(23)).toBeTruthy();
+      expect(isValidHour(0)).toBeTruthy();
+      expect(isValidHour(12)).toBeTruthy();
+      expect(isValidHour(23)).toBeTruthy();
     });
     it('should return false with a float between 0 and 23', () => {
-      expect(_isValidHourInput(0.3)).toBeFalsy();
-      expect(_isValidHourInput(5.1)).toBeFalsy();
+      expect(isValidHour(0.3)).toBeFalsy();
+      expect(isValidHour(5.1)).toBeFalsy();
     });
     it('should return false with a integer outside the valid range', () => {
-      expect(_isValidHourInput(25)).toBeFalsy();
-      expect(_isValidHourInput(-1)).toBeFalsy();
-      expect(_isValidHourInput(35.1)).toBeFalsy();
-      expect(_isValidHourInput(-5.1)).toBeFalsy();
-      expect(_isValidHourInput('0000008')).toBeFalsy();
-      expect(_isValidHourInput('25')).toBeFalsy();
-      expect(_isValidHourInput('-1')).toBeFalsy();
-      expect(_isValidHourInput('35.1')).toBeFalsy();
-      expect(_isValidHourInput('-5.1')).toBeFalsy();
+      expect(isValidHour(25)).toBeFalsy();
+      expect(isValidHour(-1)).toBeFalsy();
+      expect(isValidHour(35.1)).toBeFalsy();
+      expect(isValidHour(-5.1)).toBeFalsy();
+      expect(isValidHour('0000008')).toBeFalsy();
+      expect(isValidHour('25')).toBeFalsy();
+      expect(isValidHour('-1')).toBeFalsy();
+      expect(isValidHour('35.1')).toBeFalsy();
+      expect(isValidHour('-5.1')).toBeFalsy();
+      expect(isValidHour('5.0')).toBeFalsy();
     });
   });
 });

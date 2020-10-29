@@ -17,16 +17,6 @@
 import { FocusOrigin } from '@angular/cdk/a11y';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import {
-  BACKSPACE,
-  DELETE,
-  DOWN_ARROW,
-  ENTER,
-  LEFT_ARROW,
-  RIGHT_ARROW,
-  TAB,
-  UP_ARROW,
-} from '@angular/cdk/keycodes';
-import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -37,17 +27,23 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import { isNumberLike, _readKeyCode } from '@dynatrace/barista-components/core';
+import {
+  isDefined,
+  isEmpty,
+  isNumberLike,
+  isString,
+} from '@dynatrace/barista-components/core';
 
 const MAX_HOURS = 23;
 const MAX_MINUTES = 59;
 const MIN_HOURS = 0;
 const MIN_MINUTES = 0;
+const INVALID_TIME_REGEX = /[0]{3,}|[.-]|[0]{2}[0-9]/g;
 
 export class DtTimeChangeEvent {
   format(): string {
-    return `${_valueTo2DigitString(this.hour)}
-    : ${_valueTo2DigitString(this.minute)}`;
+    return `${valueTo2DigitString(this.hour)}
+    : ${valueTo2DigitString(this.minute)}`;
   }
   constructor(public hour: number, public minute: number) {}
 }
@@ -128,10 +124,11 @@ export class DtTimeInput {
     this.timeChanges.emit(event);
   }
 
+  // Add the focus switch from the hour input to the minute input when the user typed in at least 2 digits.
   _onHourKeyUp(): void {
     if (
-      _hasMininmumTwoDigits(this._hour) &&
-      !_hasMininmumTwoDigits(this._minute)
+      hasMininmumTwoDigits(this._hour) &&
+      !hasMininmumTwoDigits(this._minute)
     ) {
       this._minuteInput.nativeElement.focus();
     }
@@ -143,75 +140,83 @@ export class DtTimeInput {
     }
   }
 
-  /** @internal Handler for the users input events. */
-  _handleInput(event: KeyboardEvent, inputType: 'hour' | 'minute'): void {
-    const keyCode = _readKeyCode(event);
-    const validatorFn =
-      inputType === 'hour' ? _isValidHour : _isValidMinuteInput;
-    // This is the value before the keydown event is registered
+  /**
+   * @internal Handler for the user's hour input events.
+   * (If keydown event is used to prevent adding invalid input, we cannot access the whole value, just the last typed character)
+   */
+  _handleHourInput(event: InputEvent): void {
     const value = (event.currentTarget as HTMLInputElement).value;
-    const valid = _isSpecialCharAllowed(keyCode) || validatorFn(value);
-    if (valid) {
-      const parsedValue = parseInt(value, 10);
-      if (inputType === 'hour') {
-        this._hour = parsedValue;
-      } else {
-        this._minute = parsedValue;
-      }
+
+    if (isValidHour(value)) {
+      this._hour = parseInt(value, 10);
     } else {
-      // reset the value to something valid
-      if (inputType === 'hour') {
-        this._hourInput.nativeElement.value = `${this._hour}`;
-      } else {
-        this._minute = this._minute;
-      }
+      this._hourInput.nativeElement.value = isDefined(this._hour)
+        ? `${this._hour}`
+        : ''; // reset the value to something valid
     }
 
     this._changeDetectorRef.markForCheck();
   }
+
+  /** @internal Handler for the user's minute input events. */
+  _handleMinuteInput(event: InputEvent): void {
+    const value = (event.currentTarget as HTMLInputElement).value;
+
+    if (isValidMinute(value)) {
+      this._minute = parseInt(value, 10);
+    } else {
+      this._minuteInput.nativeElement.value = isDefined(this._minute)
+        ? `${this._minute}`
+        : ''; // reset the value to something valid
+    }
+
+    this._changeDetectorRef.markForCheck();
+  }
+
+  /**
+   * @internal Prevent typing in '.' and "-", since the input value will not reflect it on the change event
+   * (the event target value does not include trailing '.' or "-" -> or it does not trigger any event in case the user types in "-" for example)
+   */
+  _handleKeydown(event: KeyboardEvent): boolean {
+    return event.key !== '.' && event.key !== '-';
+  }
 }
 
-/** @internal */
-export function _isValidHour(value: any): boolean {
+/** Check is the hour value is valid. */
+export function isValidHour(value: any): boolean {
+  return isValid(value, MIN_HOURS, MAX_HOURS);
+}
+
+/** Check if the minute value is valid. */
+export function isValidMinute(value: any): boolean {
+  return isValid(value, MIN_MINUTES, MAX_MINUTES);
+}
+
+/** Check if a value if a valid hour/minute number in the range */
+export function isValid(value: any, min: number, max: number): boolean {
+  if (isEmpty(value)) {
+    return true;
+  }
+
   if (!isNumberLike(value)) {
     return false;
   }
 
-  const parsedValue = parseInt(value, 10);
-  return parsedValue >= MIN_HOURS && parsedValue <= MAX_HOURS;
-}
-
-/** @internal */
-export function _isValidMinuteInput(value: any): boolean {
-  if (!isNumberLike(value)) {
+  // the regex is necessary for invalidating chars like '-' or '.', as well as multiple leading 0s.
+  if (isString(value) && value.match(INVALID_TIME_REGEX)) {
     return false;
   }
 
   const parsedValue = parseInt(value, 10);
-  return parsedValue >= MIN_MINUTES && parsedValue <= MAX_MINUTES;
+  return parsedValue >= min && parsedValue <= max;
 }
 
-/** @internal */
-export function _hasMininmumTwoDigits(input: number | null): boolean {
+/** Check if a number has at least two digits or is null. */
+export function hasMininmumTwoDigits(input: number | null): boolean {
   return input !== null && input >= 10;
 }
 
-export function _isSpecialCharAllowed(keyCode: number): boolean {
-  const allowedSpecialChars = [
-    ENTER,
-    BACKSPACE,
-    TAB,
-    LEFT_ARROW,
-    RIGHT_ARROW,
-    UP_ARROW,
-    DOWN_ARROW,
-    DELETE,
-  ];
-
-  return allowedSpecialChars.includes(keyCode);
-}
-
-/** @internal */
-export function _valueTo2DigitString(value: number): string {
+/** Format a number to have two digits (with a leading 0 in case it is a single digit or convert it to string otherwise). */
+export function valueTo2DigitString(value: number): string {
   return value < 10 ? `0${value}` : value.toString();
 }
