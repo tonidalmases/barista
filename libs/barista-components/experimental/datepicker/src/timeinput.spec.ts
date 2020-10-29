@@ -17,8 +17,6 @@
 import { isValidHour, valueTo2DigitString } from './timeinput';
 
 describe('timeinput', () => {
-  describe('_validateAndParseInput', () => {});
-
   describe('valueTo2DigitString', () => {
     it('should cast a number value to string', () => {
       expect(valueTo2DigitString(20)).toBe('20');

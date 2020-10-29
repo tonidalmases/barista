@@ -169,7 +169,8 @@ export const _DtDatepickerBase = mixinTabIndex(
     ]),
   ],
 })
-export class DtDatePicker<D> extends _DtDatepickerBase
+export class DtDatePicker<D>
+  extends _DtDatepickerBase
   implements ControlValueAccessor, CanDisable, HasTabIndex, OnDestroy {
   /** Unique id of the element. */
   @Input()
@@ -263,7 +264,13 @@ export class DtDatePicker<D> extends _DtDatepickerBase
   /**
    * @internal Label used for displaying the date.
    */
-  _valueLabel = '';
+  get valueLabel() {
+    return this._valueLabel || 'Select date';
+  }
+  set valueLabel(value) {
+    this._valueLabel = value;
+  }
+  private _valueLabel = '';
 
   /**
    * @internal Label used for displaying the time.
