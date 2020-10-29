@@ -23,12 +23,13 @@
       ></td>
       <td
         *ngFor="let cell of week; let dateIndex = index"
+        role="cell"
         class="dt-calendar-table-cell"
         [class.dt-calendar-active]="_isSame(cell, activeDate)"
         [class.dt-calendar-selected]="_isSame(cell, selected)"
         [attr.aria-selected]="_isSame(cell, selected)"
         [attr.aria-label]="cell.ariaLabel"
-        (click)="_cellClicked(cell, $event)"
+        (click)="_cellClicked(cell)"
       >
         <div class="dt-calendar-table-cell-inner">
           {{ cell.displayValue }}

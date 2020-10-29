@@ -1,4 +1,4 @@
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary", "sass_library")
+load("@io_bazel_rules_sass//:defs.bzl", "multi_sass_binary", "sass_library")
 load("@npm//@bazel/typescript:index.bzl", "ts_config")
 load("//tools/bazel_rules:index.bzl", "jest", "ng_module_view_engine", "stylelint")
 
@@ -16,12 +16,21 @@ ng_module_view_engine(
     angular_assets = [
         ":styles",
         "src/datepicker.html",
+        "src/calendar.html",
+        "src/calendar-body.html",
+        "src/timepicker.html",
+        "src/timeinput.html",
     ],
     module_name = "@dynatrace/barista-components/experimental/datepicker",
     tsconfig = "tsconfig_lib",
     deps = [
         "//libs/barista-components/core:compile",
         "//libs/barista-components/form-field:compile",
+        "//libs/barista-components/theming:compile",
+        "//libs/barista-components/button:compile",
+        "//libs/barista-components/icon:compile",
+        "//libs/barista-components/input:compile",
+        "//libs/barista-components/overlay:compile",
         "@npm//@angular/core",
         "@npm//@angular/common",
         "@npm//@angular/cdk",
@@ -44,9 +53,15 @@ filegroup(
     ]),
 )
 
-sass_binary(
+multi_sass_binary(
     name = "styles",
-    src = "src/datepicker.scss"
+    srcs = [
+        "src/datepicker.scss",
+        "src/calendar-body.scss",
+        "src/calendar.scss",
+        "src/timepicker.scss",
+        "src/timeinput.scss",
+    ]
 )
 
 stylelint(
@@ -63,6 +78,13 @@ jest(
     deps = [
         ":compile",
         "//libs/testing/browser",
+        "//libs/barista-components/core:compile",
+        "//libs/barista-components/form-field:compile",
+        "//libs/barista-components/theming:compile",
+        "//libs/barista-components/button:compile",
+        "//libs/barista-components/icon:compile",
+        "//libs/barista-components/input:compile",
+        "//libs/barista-components/overlay:compile",
         "@npm//@angular/common",
         "@npm//@angular/core",
         "@npm//@angular/platform-browser",

@@ -38,7 +38,7 @@ describe('timeinput', () => {
       expect(isValidHour(0.3)).toBeFalsy();
       expect(isValidHour(5.1)).toBeFalsy();
     });
-    it('should return false with a integer outside the valid range', () => {
+    it('should return false with an integer outside the valid range', () => {
       expect(isValidHour(25)).toBeFalsy();
       expect(isValidHour(-1)).toBeFalsy();
       expect(isValidHour(35.1)).toBeFalsy();
