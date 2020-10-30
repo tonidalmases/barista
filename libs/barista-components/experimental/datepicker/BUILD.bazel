@@ -53,6 +53,11 @@ filegroup(
     ]),
 )
 
+sass_library(
+    name = "theme",
+    srcs = ["src/_calendar-body-theme.scss", "src/_calendar-header-theme.scss", "src/_timeinput-theme.scss"]
+)
+
 multi_sass_binary(
     name = "styles",
     srcs = [
@@ -61,6 +66,7 @@ multi_sass_binary(
         "src/calendar.scss",
         "src/timepicker.scss",
         "src/timeinput.scss",
+        ":theme"
     ]
 )
 

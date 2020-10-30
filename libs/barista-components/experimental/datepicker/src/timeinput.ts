@@ -38,7 +38,7 @@ const MAX_HOURS = 23;
 const MAX_MINUTES = 59;
 const MIN_HOURS = 0;
 const MIN_MINUTES = 0;
-const INVALID_TIME_REGEX = /[0]{3,}|[.-]|[0]{2}[0-9]/g;
+const INVALID_TIME_REGEX = /[0]{3,}|[.+-]|[0]{2}[0-9]/g;
 
 export class DtTimeChangeEvent {
   format(): string {
@@ -174,11 +174,11 @@ export class DtTimeInput {
   }
 
   /**
-   * @internal Prevent typing in '.' and "-", since the input value will not reflect it on the change event
+   * @internal Prevent typing in '.', '+, and "-", since the input value will not reflect it on the change event
    * (the event target value does not include trailing '.' or "-" -> or it does not trigger any event in case the user types in "-" for example)
    */
   _handleKeydown(event: KeyboardEvent): boolean {
-    return event.key !== '.' && event.key !== '-';
+    return event.key !== '.' && event.key !== '-' && event.key !== '+';
   }
 }
 
@@ -192,18 +192,18 @@ export function isValidMinute(value: any): boolean {
   return isValid(value, MIN_MINUTES, MAX_MINUTES);
 }
 
-/** Check if a value if a valid hour/minute number in the range */
+/** Check if a value if a valid hour/minute number in the range
+ * Note that if a number is passed directly in with the format n.0, such as 5.0, it will be truncated to 5 and validation will fail.
+ * However, this cannot happen with the input event, since it will be passed as a string. Also, typing '.' is prevented (see above)
+ */
 export function isValid(value: any, min: number, max: number): boolean {
-  if (isEmpty(value)) {
-    return true;
-  }
-
-  if (!isNumberLike(value)) {
+  if (isEmpty(value) || !isNumberLike(value)) {
     return false;
   }
 
   // the regex is necessary for invalidating chars like '-' or '.', as well as multiple leading 0s.
-  if (isString(value) && value.match(INVALID_TIME_REGEX)) {
+  const stringifiedVal = isString(value) ? value : value.toString();
+  if (stringifiedVal.match(INVALID_TIME_REGEX)) {
     return false;
   }
 

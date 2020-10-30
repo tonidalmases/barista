@@ -29,26 +29,57 @@ describe('timeinput', () => {
   });
 
   describe('isValidHour', () => {
-    it('should return true with a integer between 0 and 23', () => {
+    it('should return true with an integer between 0 and 23', () => {
       expect(isValidHour(0)).toBeTruthy();
+      expect(isValidHour(10)).toBeTruthy();
       expect(isValidHour(12)).toBeTruthy();
       expect(isValidHour(23)).toBeTruthy();
+    });
+    it('should return true with a string representing an integer between 0 and 23', () => {
+      expect(isValidHour('0')).toBeTruthy();
+      expect(isValidHour('00')).toBeTruthy();
+      expect(isValidHour('10')).toBeTruthy();
+      expect(isValidHour('12')).toBeTruthy();
+      expect(isValidHour('23')).toBeTruthy();
     });
     it('should return false with a float between 0 and 23', () => {
       expect(isValidHour(0.3)).toBeFalsy();
       expect(isValidHour(5.1)).toBeFalsy();
     });
+    it('should return false with a string representing a float between 0 and 23', () => {
+      expect(isValidHour('0.3')).toBeFalsy();
+      expect(isValidHour('-5.1')).toBeFalsy();
+      expect(isValidHour('5.0')).toBeFalsy();
+    });
     it('should return false with an integer outside the valid range', () => {
       expect(isValidHour(25)).toBeFalsy();
       expect(isValidHour(-1)).toBeFalsy();
-      expect(isValidHour(35.1)).toBeFalsy();
+    });
+    it('should return false with a floar outside the valid range', () => {
       expect(isValidHour(-5.1)).toBeFalsy();
+      expect(isValidHour(-5.0)).toBeFalsy();
+      expect(isValidHour(35.0)).toBeFalsy();
+      expect(isValidHour(35.1)).toBeFalsy();
+    });
+    it('should return false with a string representing an integer outside the valid range', () => {
+      expect(isValidHour('35.1')).toBeFalsy();
       expect(isValidHour('0000008')).toBeFalsy();
+      expect(isValidHour('005')).toBeFalsy();
       expect(isValidHour('25')).toBeFalsy();
       expect(isValidHour('-1')).toBeFalsy();
-      expect(isValidHour('35.1')).toBeFalsy();
-      expect(isValidHour('-5.1')).toBeFalsy();
-      expect(isValidHour('5.0')).toBeFalsy();
+    });
+    it('should return false with invalid inputs containing special characters - or +', () => {
+      expect(isValidHour('-1')).toBeFalsy();
+      expect(isValidHour('+1')).toBeFalsy();
+      expect(isValidHour('1+1')).toBeFalsy();
+      expect(isValidHour('0-0')).toBeFalsy();
+    });
+    it('should return false with an empty input', () => {
+      expect(isValidHour('')).toBeFalsy();
+      expect(isValidHour(' ')).toBeFalsy();
+      expect(isValidHour('NaN')).toBeFalsy();
+      expect(isValidHour(null)).toBeFalsy();
+      expect(isValidHour(undefined)).toBeFalsy();
     });
   });
 });
