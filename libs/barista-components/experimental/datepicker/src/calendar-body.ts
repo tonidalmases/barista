@@ -131,6 +131,16 @@ export class DtCalendarBody<D> {
   /** The number of blank cells to put at the beginning for the first row. */
   _firstRowOffset: number;
 
+  /** @internal Aria label used for the calendar body table. */
+  get _ariaLabel(): string {
+    return this._activeDate
+      ? this._dateAdapter.format(this._activeDate, {
+          year: 'numeric',
+          month: 'long',
+        })
+      : '';
+  }
+
   constructor(
     private _dateAdapter: DtDateAdapter<D>,
     private _changeDetectorRef: ChangeDetectorRef,

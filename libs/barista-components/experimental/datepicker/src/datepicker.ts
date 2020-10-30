@@ -264,10 +264,10 @@ export class DtDatePicker<D>
   /**
    * @internal Label used for displaying the date.
    */
-  get valueLabel() {
+  get valueLabel(): string {
     return this._valueLabel || 'Select date';
   }
-  set valueLabel(value) {
+  set valueLabel(value: string) {
     this._valueLabel = value;
   }
   private _valueLabel = '';
