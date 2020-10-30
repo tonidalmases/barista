@@ -192,8 +192,9 @@ export function isValidMinute(value: any): boolean {
   return isValid(value, MIN_MINUTES, MAX_MINUTES);
 }
 
-/** Check if a value if a valid hour/minute number in the range
- * Note that if a number is passed directly in with the format n.0, such as 5.0, it will be truncated to 5 and validation will fail.
+/**
+ * Check if a value if a valid hour/minute number in the range
+ * Note that if a number is passed directly in with the format 'n.0', such as 5.0, it will be truncated to 5 and validation will fail.
  * However, this cannot happen with the input event, since it will be passed as a string. Also, typing '.' is prevented (see above)
  */
 export function isValid(value: any, min: number, max: number): boolean {
@@ -216,7 +217,10 @@ export function hasMininmumTwoDigits(input: number | null): boolean {
   return input !== null && input >= 10;
 }
 
-/** Format a number to have two digits (with a leading 0 in case it is a single digit or convert it to string otherwise). */
+/**
+ * Format a number with max two digits to always display two digits
+ * (with a leading 0 in case it is a single digit or convert it to string otherwise).
+ */
 export function valueTo2DigitString(value: number): string {
   return value < 10 ? `0${value}` : value.toString();
 }

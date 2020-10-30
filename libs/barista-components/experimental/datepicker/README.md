@@ -12,6 +12,7 @@ handle the formatting/parsing library of your choice.
 ```typescript
 import { NgModule } from '@angular/core';
 import { DtDatepickerModule } from '@dynatrace/barista-components/experimental/datepicker';
+import { DtNativeDateModule } from '@dynatrace/barista-components/core';
 
 @NgModule({
   imports: [DtDatepickerModule, DtNativeDateModule],
@@ -21,15 +22,15 @@ class MyModule {}
 
 ## Inputs
 
-| Name           | Type        | Default | Description                                                                                                                        |
-| -------------- | ----------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| value          | `D \| null` | `null`  | The selected date.                                                                                                                 |
-| startAt        | `D \| null` | `null`  | The date to open the calendar to initially. Is ignored if `selected` is set. Defaults to today's date internally for display only. |
-| min            | `D \| null` | `null`  | The minimum valid date.                                                                                                            |
-| max            | `D \| null` | `null`  | The maximum valid date.                                                                                                            |
-| disabled       | `boolean`   | `false` | Whether the datepicker is disabled.                                                                                                |
-| isTimeEnabled  | `boolean`   | `false` | Whether or not the time mode is enabled.                                                                                           |
-| isRangeEnabled | `boolean`   | `false` | Whether or not the range mode is enabled.                                                                                          |
+| Name           | Type      | Default | Description                               |
+| -------------- | --------- | ------- | ----------------------------------------- |
+| value          | `D        | null`   | `null`                                    | The selected date. |
+| startAt        | `D        | null`   | `null`                                    | The date to open the calendar to initially. Is ignored if `selected` is set. Defaults to today's date internally for display only. |
+| min            | `D        | null`   | `null`                                    | The minimum valid date. |
+| max            | `D        | null`   | `null`                                    | The maximum valid date. |
+| disabled       | `boolean` | `false` | Whether the datepicker is disabled.       |
+| isTimeEnabled  | `boolean` | `false` | Whether or not the time mode is enabled.  |
+| isRangeEnabled | `boolean` | `false` | Whether or not the range mode is enabled. |
 
 #### Methods
 
