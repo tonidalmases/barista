@@ -5,12 +5,13 @@
         scope="col"
         *ngFor="let day of _weekdays"
         [attr.aria-label]="day.long"
+        [attr.abbr]="day.short"
       >
         {{ day.short }}
       </th>
     </tr>
   </thead>
-  <tbody class="dt-calendar-table-body">
+  <tbody class="dt-calendar-table-body" role="grid">
     <tr
       *ngFor="let week of _weeks; let weekIndex = index"
       role="row"
@@ -23,7 +24,7 @@
       ></td>
       <td
         *ngFor="let cell of week; let dateIndex = index"
-        role="cell"
+        role="gridcell"
         class="dt-calendar-table-cell"
         [class.dt-calendar-active]="_isSame(cell, activeDate)"
         [class.dt-calendar-selected]="_isSame(cell, selected)"
