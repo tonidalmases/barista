@@ -38,7 +38,7 @@ import {
   DtDateAdapter,
   _readKeyCode,
 } from '@dynatrace/barista-components/core';
-import { getValidDateOrNull } from './util';
+import { getValidDateOrNull } from './datepicker-utils/util';
 
 const DAYS_PER_WEEK = 7;
 

@@ -71,15 +71,15 @@ export class DtTimepicker {
   @ViewChild(DtTimeInput) _timeInput: DtTimeInput;
 
   @Output()
-  timeChanges: Observable<DtTimeChangeEvent>;
+  timeChange: Observable<DtTimeChangeEvent>;
 
   constructor(
     private _zone: NgZone,
     private _changeDetectorRef: ChangeDetectorRef,
   ) {
-    this.timeChanges = this._zone.onMicrotaskEmpty.pipe(
+    this.timeChange = this._zone.onMicrotaskEmpty.pipe(
       take(1),
-      switchMap(() => this._timeInput.timeChanges.asObservable()),
+      switchMap(() => this._timeInput.timeChange.asObservable()),
     );
   }
 }

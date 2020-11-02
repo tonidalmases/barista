@@ -26,7 +26,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { DtDateAdapter } from '@dynatrace/barista-components/core';
-import { getValidDateOrNull } from './util';
+import { getValidDateOrNull } from './datepicker-utils/util';
 import { DtCalendarBody } from './calendar-body';
 
 @Component({

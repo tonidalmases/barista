@@ -27,18 +27,13 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
+import { isDefined } from '@dynatrace/barista-components/core';
 import {
-  isDefined,
-  isEmpty,
-  isNumberLike,
-  isString,
-} from '@dynatrace/barista-components/core';
-
-const MAX_HOURS = 23;
-const MAX_MINUTES = 59;
-const MIN_HOURS = 0;
-const MIN_MINUTES = 0;
-const INVALID_TIME_REGEX = /[0]{3,}|[.+-]|[0]{2}[0-9]/g;
+  hasMininmumTwoDigits,
+  isValidHour,
+  isValidMinute,
+  valueTo2DigitString,
+} from './datepicker-utils/util';
 
 export class DtTimeChangeEvent {
   format(): string {
@@ -100,7 +95,7 @@ export class DtTimeInput {
   private _isDisabled: boolean = false;
 
   /** Emits when the new hour or minute value changes. */
-  @Output() timeChanges = new EventEmitter<DtTimeChangeEvent>();
+  @Output() timeChange = new EventEmitter<DtTimeChangeEvent>();
 
   /** @internal */
   @ViewChild('hours', { read: ElementRef }) _hourInput: ElementRef<
@@ -119,9 +114,8 @@ export class DtTimeInput {
    * Emits the `time change` event.
    */
   _emitTimeChangeEvent(): void {
-    console.log('event emitted');
     const event = new DtTimeChangeEvent(this._hour || 0, this._minute || 0);
-    this.timeChanges.emit(event);
+    this.timeChange.emit(event);
   }
 
   // Add the focus switch from the hour input to the minute input when the user typed in at least 2 digits.
@@ -180,47 +174,4 @@ export class DtTimeInput {
   _handleKeydown(event: KeyboardEvent): boolean {
     return event.key !== '.' && event.key !== '-' && event.key !== '+';
   }
-}
-
-/** Check is the hour value is valid. */
-export function isValidHour(value: any): boolean {
-  return isValid(value, MIN_HOURS, MAX_HOURS);
-}
-
-/** Check if the minute value is valid. */
-export function isValidMinute(value: any): boolean {
-  return isValid(value, MIN_MINUTES, MAX_MINUTES);
-}
-
-/**
- * Check if a value if a valid hour/minute number in the range
- * Note that if a number is passed directly in with the format 'n.0', such as 5.0, it will be truncated to 5 and validation will fail.
- * However, this cannot happen with the input event, since it will be passed as a string. Also, typing '.' is prevented (see above)
- */
-export function isValid(value: any, min: number, max: number): boolean {
-  if (isEmpty(value) || !isNumberLike(value)) {
-    return false;
-  }
-
-  // the regex is necessary for invalidating chars like '-' or '.', as well as multiple leading 0s.
-  const stringifiedVal = isString(value) ? value : value.toString();
-  if (stringifiedVal.match(INVALID_TIME_REGEX)) {
-    return false;
-  }
-
-  const parsedValue = parseInt(value, 10);
-  return parsedValue >= min && parsedValue <= max;
-}
-
-/** Check if a number has at least two digits or is null. */
-export function hasMininmumTwoDigits(input: number | null): boolean {
-  return input !== null && input >= 10;
-}
-
-/**
- * Format a number with max two digits to always display two digits
- * (with a leading 0 in case it is a single digit or convert it to string otherwise).
- */
-export function valueTo2DigitString(value: number): string {
-  return value < 10 ? `0${value}` : value.toString();
 }

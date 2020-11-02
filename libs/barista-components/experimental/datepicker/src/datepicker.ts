@@ -67,7 +67,7 @@ import { takeUntil } from 'rxjs/operators';
 import { DtCalendar } from './calendar';
 import { DtTimeChangeEvent } from './timeinput';
 import { DtTimepicker } from './timepicker';
-import { getValidDateOrNull } from './util';
+import { getValidDateOrNull } from './datepicker-utils/util';
 
 /**
  * This position config ensures that the top "start" corner of the overlay
@@ -394,7 +394,7 @@ export class DtDatePicker<D>
    * @internal Handle timepicker hour and minute values.
    */
   _handleTimepickerValues(): void {
-    this._timePicker.timeChanges
+    this._timePicker.timeChange
       .pipe(takeUntil(this._destroy$))
       .subscribe((changed) => {
         this._handleTimeInputChange(changed);
