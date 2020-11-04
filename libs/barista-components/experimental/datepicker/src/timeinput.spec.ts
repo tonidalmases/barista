@@ -1,3 +1,4 @@
+import { flush } from '@angular/core/testing';
 /**
  * @license
  * Copyright 2020 Dynatrace LLC
@@ -15,9 +16,17 @@
  */
 
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormsModule } from '@angular/forms';
-import { DtTimeInput } from '@dynatrace/barista-components/experimental/datepicker';
+import {
+  async,
+  ComponentFixture,
+  fakeAsync,
+  TestBed,
+  tick,
+} from '@angular/core/testing';
+import {
+  DtDatepickerModule,
+  DtTimeInput,
+} from '@dynatrace/barista-components/experimental/datepicker';
 import { createComponent } from '@dynatrace/testing/browser';
 
 /**
@@ -36,8 +45,8 @@ import { createComponent } from '@dynatrace/testing/browser';
 describe('DtTimeInput', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [FormsModule],
-      declarations: [SimpleTimeInputTestApp, DtTimeInput],
+      imports: [DtDatepickerModule],
+      declarations: [SimpleTimeInputTestApp],
     });
 
     TestBed.compileComponents();
@@ -45,12 +54,12 @@ describe('DtTimeInput', () => {
 
   describe('basic behavior', () => {
     let fixture: ComponentFixture<SimpleTimeInputTestApp>;
-    let element: HTMLElement;
+    // let element: HTMLElement;
     let component: SimpleTimeInputTestApp;
 
     beforeEach(() => {
       fixture = createComponent(SimpleTimeInputTestApp);
-      element = fixture.nativeElement;
+      // element = fixture.nativeElement;
       component = fixture.componentInstance;
       fixture.detectChanges();
     });
@@ -61,25 +70,50 @@ describe('DtTimeInput', () => {
 
     describe.only('disabled input property', () => {
       // tslint:disable-next-line: dt-no-focused-tests
-      it.only('should not be usable when disabled', () => {
-        element.focus();
+      it('should not be usable when disabled', fakeAsync(() => {
+        // const hourEl = component._hourInput.nativeElement;
+        // hourEl.focus();
+        // fixture.detectChanges();
+        // console.log(element);
+        const hourEl = component.timeInput._hourInput.nativeElement;
+        hourEl.focus();
+        flush();
         fixture.detectChanges();
-        console.log(document.activeElement, element);
-        expect(document.activeElement).toBe(element);
+        tick();
+        // console.log(element);
+        // console.log(hourEl);
+        // element.focus();
+        // fixture.detectChanges();
+        // console.log(document.activeElement, element);
+        // const inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+        expect(document.activeElement).toBe(hourEl);
         component.disabled = true;
         fixture.detectChanges();
+        tick();
+
+        console.log('hourEl ', hourEl);
+        console.log('test ', hourEl.disabled);
+        console.log('activeElement ', document.activeElement);
         expect(document.activeElement).toBe(document.body);
-      });
+        expect(hourEl.disabled).toBeTruthy();
+        // expect(hourEl.getAttribute('disabled')).toBeTruthy();
+      }));
     });
 
     describe('timeChange event', () => {
-      element.focus();
+      // element.focus();
+      // fixture.detectChanges();
+      // component.hour = 23;
+      // component.minute = 55;
+      const hourEl = component.timeInput._hourInput.nativeElement;
+      hourEl.value = 'hello';
+      // Simulate input event.
+      // hourEl.triggerEventHandler('input', { target: hourEl });
       fixture.detectChanges();
-      component.hour = 23;
-      component.minute = 55;
-      fixture.detectChanges();
-      document.body.focus();
-      fixture.detectChanges();
+
+      // fixture.detectChanges();
+      // document.body.focus();
+      // fixture.detectChanges();
     });
 
     describe('focus switch', () => {});
@@ -107,6 +141,8 @@ class SimpleTimeInputTestApp {
   minute = 53;
   disabled = false;
 
+  @ViewChild(DtTimeInput) timeInput: DtTimeInput;
+
   /** @internal */
   @ViewChild('hours', { read: ElementRef }) _hourInput: ElementRef<
     HTMLInputElement
@@ -116,7 +152,8 @@ class SimpleTimeInputTestApp {
   @ViewChild('minutes', { read: ElementRef }) _minuteInput: ElementRef<
     HTMLInputElement
   >;
-  selectEvent: DtTimeInput;
+
+  // selectEvent: DtTimeInput;
 
   // ? We might need that in order to test events like the blur ...
   // handleTabChange(event: DtTimeInput): void {
