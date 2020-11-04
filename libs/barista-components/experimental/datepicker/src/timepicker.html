@@ -1,5 +1,6 @@
 <div class="dt-timepicker-part">
-  <div *ngIf="isTimeRangeEnabled">
+  <!-- Replace false with isTimeRangeEnabled when range mode is supported -->
+  <div *ngIf="false">
     <div class="dt-timepicker-date-label">{{ valueLabel }}</div>
   </div>
 
@@ -10,7 +11,8 @@
   ></dt-timeinput>
 </div>
 
-<div *ngIf="isTimeRangeEnabled">
+<!-- Replace false with isTimeRangeEnabled when range mode is supported -->
+<div *ngIf="false">
   <div class="dt-timepicker-separator">to</div>
 
   <div class="dt-timepicker-part">

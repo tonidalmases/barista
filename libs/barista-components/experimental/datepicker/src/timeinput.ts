@@ -55,6 +55,7 @@ export class DtTimeChangeEvent {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DtTimeInput {
+  /** Represents the hour value in the hour input element */
   @Input()
   get hour(): number | null {
     return this._hour;
@@ -69,6 +70,7 @@ export class DtTimeInput {
   }
   private _hour: number | null = null;
 
+  /** Represents the minute value in the minute input element */
   @Input()
   get minute(): number | null {
     return this._minute;
@@ -94,15 +96,15 @@ export class DtTimeInput {
   }
   private _isDisabled: boolean = false;
 
-  /** Emits when the new hour or minute value changes. */
+  /** Emits when the hour or minute value changed and the focus is not on the time input elements anymore. */
   @Output() timeChange = new EventEmitter<DtTimeChangeEvent>();
 
-  /** @internal */
+  /** @internal Reference of the hour input element */
   @ViewChild('hours', { read: ElementRef }) _hourInput: ElementRef<
     HTMLInputElement
   >;
 
-  /** @internal */
+  /** @internal Reference of the minute input element */
   @ViewChild('minutes', { read: ElementRef }) _minuteInput: ElementRef<
     HTMLInputElement
   >;
@@ -118,7 +120,7 @@ export class DtTimeInput {
     this.timeChange.emit(event);
   }
 
-  // Add the focus switch from the hour input to the minute input when the user typed in at least 2 digits.
+  // Add the focus switch from the hour input to the minute input when the user typed in 2 digits.
   _onHourKeyUp(): void {
     if (
       hasMininmumTwoDigits(this._hour) &&
@@ -128,6 +130,7 @@ export class DtTimeInput {
     }
   }
 
+  /** Called on blur and emits the timeChange event if the time inputs contain valid values. */
   _onInputBlur(origin: FocusOrigin): void {
     if (origin === null) {
       this._emitTimeChangeEvent();
@@ -136,7 +139,8 @@ export class DtTimeInput {
 
   /**
    * @internal Handler for the user's hour input events.
-   * (If keydown event is used to prevent adding invalid input, we cannot access the whole value, just the last typed character)
+   * NOTE: If keydown event is used to prevent adding invalid input,
+   * we cannot access the whole value, just the last typed character, hence why we use the input event on the input elements
    */
   _handleHourInput(event: InputEvent): void {
     const value = (event.currentTarget as HTMLInputElement).value;

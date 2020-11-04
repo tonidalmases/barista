@@ -29,7 +29,6 @@ import { Observable } from 'rxjs';
 import { switchMap, take } from 'rxjs/operators';
 import { DtTimeChangeEvent, DtTimeInput } from './timeinput';
 
-/** @internal */
 @Component({
   selector: 'dt-timepicker',
   templateUrl: 'timepicker.html',
@@ -46,9 +45,11 @@ export class DtTimepicker {
   @Input()
   valueLabel: any;
 
+  /** Contains the hour value that is depicted in the timeInput component */
   @Input()
   hour: number | null;
 
+  /** Contains the minute value that is depicted in the timeInput component */
   @Input()
   minute: number | null;
 
@@ -65,11 +66,12 @@ export class DtTimepicker {
     this._isDisabled = coerceBooleanProperty(disabled);
     this._changeDetectorRef.markForCheck();
   }
-
   private _isDisabled: boolean = false;
 
+  /** Reference to the timeInput component */
   @ViewChild(DtTimeInput) _timeInput: DtTimeInput;
 
+  /** Provides an event when the time input has changed */
   @Output()
   timeChange: Observable<DtTimeChangeEvent>;
 
