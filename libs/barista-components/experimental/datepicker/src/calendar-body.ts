@@ -85,7 +85,6 @@ export class DtCalendarBody<D> {
       year: 'numeric',
       month: 'short',
     });
-    this.ariaLabelledby = this.ariaLabelledby || this._labelid;
     this._changeDetectorRef.markForCheck();
   }
   private _activeDate: D;

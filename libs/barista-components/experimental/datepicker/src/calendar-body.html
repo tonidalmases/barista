@@ -8,8 +8,8 @@
 <table
   class="dt-calendar-table"
   role="grid"
-  [attr.aria-labelledby]="ariaLabelledby"
-  [attr.aria-describedby]="ariaLabelledby"
+  [attr.aria-labelledby]="ariaLabelledby || _labelid"
+  [attr.aria-describedby]="ariaLabelledby || _labelid"
 >
   <thead class="dt-calendar-table-header">
     <tr>
