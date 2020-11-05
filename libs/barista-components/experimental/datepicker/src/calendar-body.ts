@@ -41,6 +41,7 @@ import {
 import { getValidDateOrNull } from './datepicker-utils/util';
 
 const DAYS_PER_WEEK = 7;
+let uniqueId = 0;
 
 interface DtCalendarCell<D> {
   displayValue: string;
@@ -80,6 +81,12 @@ export class DtCalendarBody<D> {
       this.maxDate,
     );
     this._init();
+    this._label = this._dateAdapter.format(value, {
+      year: 'numeric',
+      month: 'short',
+    });
+    this.ariaLabelledby = this.ariaLabelledby || this._labelid;
+    this._changeDetectorRef.markForCheck();
   }
   private _activeDate: D;
 
@@ -116,7 +123,7 @@ export class DtCalendarBody<D> {
   /** Function used to filter whether a date is selectable or not. */
   @Input() dateFilter: (date: D) => boolean;
 
-  @Input('aria-labelledby') ariaLabelledby: string | null = null;
+  @Input('aria-labelledby') ariaLabelledby: string | null;
 
   /** Emits when a new value is selected. */
   @Output() readonly selectedChange = new EventEmitter<D>();
@@ -132,6 +139,11 @@ export class DtCalendarBody<D> {
 
   /** The number of blank cells to put at the beginning for the first row. */
   _firstRowOffset: number;
+
+  /** Unique id used for the aria-label. */
+  _labelid = `dt-calendar-body-label-${uniqueId++}`;
+
+  _label = '';
 
   constructor(
     private _dateAdapter: DtDateAdapter<D>,
