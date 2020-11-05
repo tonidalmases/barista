@@ -14,10 +14,11 @@
       max="23"
       placeholder="hh"
       inputmode="numeric"
+      [disabled]="disabled"
+      [attr.aria-disabled]="disabled"
       [ngModel]="hour"
       (input)="_handleHourInput($event)"
       (keydown)="_handleKeydown($event)"
-      [disabled]="disabled"
       (keyup)="_onHourKeyUp()"
       aria-label="Please insert the hour"
     />
@@ -38,10 +39,11 @@
       maxlength="2"
       placeholder="mm"
       inputmode="numeric"
+      [disabled]="disabled"
+      [attr.aria-disabled]="disabled"
       [ngModel]="minute"
       (input)="_handleMinuteInput($event)"
       (keydown)="_handleKeydown($event)"
-      [disabled]="disabled"
       aria-label="Please insert the minutes"
     />
   </div>

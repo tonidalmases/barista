@@ -27,7 +27,7 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import { isDefined } from '@dynatrace/barista-components/core';
+import { isDefined, isEmpty } from '@dynatrace/barista-components/core';
 import {
   hasMininmumTwoDigits,
   isValidHour,
@@ -122,6 +122,8 @@ export class DtTimeInput {
 
   // Add the focus switch from the hour input to the minute input when the user typed in 2 digits.
   _onHourKeyUp(): void {
+    console.log('on hour keyup', this._hour, this._minute);
+
     if (
       hasMininmumTwoDigits(this._hour) &&
       !hasMininmumTwoDigits(this._minute)
@@ -147,10 +149,16 @@ export class DtTimeInput {
 
     if (isValidHour(value)) {
       this._hour = parseInt(value, 10);
+      console.log('hour: ', this._hour);
     } else {
+      // reset the value to something valid - use fallback value if it exists and the new value is not empty, otherwise reset to empty
+      if (isEmpty(value)) {
+        this._hour = null;
+      }
+
       this._hourInput.nativeElement.value = isDefined(this._hour)
         ? `${this._hour}`
-        : ''; // reset the value to something valid
+        : '';
     }
 
     this._changeDetectorRef.markForCheck();
@@ -163,9 +171,12 @@ export class DtTimeInput {
     if (isValidMinute(value)) {
       this._minute = parseInt(value, 10);
     } else {
+      if (isEmpty(value)) {
+        this._minute = null;
+      }
       this._minuteInput.nativeElement.value = isDefined(this._minute)
         ? `${this._minute}`
-        : ''; // reset the value to something valid
+        : '';
     }
 
     this._changeDetectorRef.markForCheck();

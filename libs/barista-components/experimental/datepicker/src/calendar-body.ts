@@ -116,6 +116,8 @@ export class DtCalendarBody<D> {
   /** Function used to filter whether a date is selectable or not. */
   @Input() dateFilter: (date: D) => boolean;
 
+  @Input('aria-labelledby') ariaLabelledby: string | null = null;
+
   /** Emits when a new value is selected. */
   @Output() readonly selectedChange = new EventEmitter<D>();
 

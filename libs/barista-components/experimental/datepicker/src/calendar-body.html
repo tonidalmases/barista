@@ -2,14 +2,8 @@
   class="dt-calendar-table"
   role="grid"
   [attr.aria-label]="_ariaLabel"
-  aria-describedby="dt-calendar-body-description"
+  [attr.aria-labelledby]="ariaLabelledby"
 >
-  <span
-    id="dt-calendar-body-description"
-    class="dt-calendar-table-description"
-    aria-hidden="true"
-    >Calendar body</span
-  >
   <thead class="dt-calendar-table-header">
     <tr>
       <th

@@ -18,7 +18,12 @@
     <dt-icon name="dropdownclosed"></dt-icon>
   </button>
 
-  <span class="dt-calendar-header-label" aria-live="polite">{{ _label }}</span>
+  <span
+    id="dt-calendar-aria-label"
+    class="dt-calendar-header-label"
+    aria-live="polite"
+    >{{ _label }}</span
+  >
 
   <button
     dt-icon-button
@@ -46,6 +51,7 @@
   [maxDate]="maxDate"
   [(activeDate)]="activeDate"
   (selectedChange)="_selectedValueChanged($event)"
+  [aria-labelledby]="'dt-calendar-aria-label'"
 ></dt-calendar-body>
 
 <button dt-button variant="secondary" (click)="_setTodayDate()">Today</button>
