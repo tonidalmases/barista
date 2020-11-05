@@ -1,3 +1,4 @@
+import { fakeAsync } from '@angular/core/testing';
 /**
  * @license
  * Copyright 2020 Dynatrace LLC
@@ -14,8 +15,8 @@
  * limitations under the License.
  */
 
-import { Component, ViewChild, ElementRef } from '@angular/core';
-import { TestBed, ComponentFixture, waitForAsync } from '@angular/core/testing';
+import { Component, ViewChild } from '@angular/core';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { createComponent } from '@dynatrace/testing/browser';
 import { DtDatepickerModule, DtTimepicker } from '..';
 
@@ -33,17 +34,18 @@ describe('DtTimePicker', () => {
 
   describe('basic behavior', () => {
     let fixture: ComponentFixture<SimpleTimePickerTestApp>;
-    let component: SimpleTimePickerTestApp;
+    // let component: SimpleTimePickerTestApp;
 
     beforeEach(() => {
       fixture = createComponent(SimpleTimePickerTestApp);
-      component = fixture.componentInstance;
+      // component = fixture.componentInstance;
       fixture.detectChanges();
     });
 
     /**
      * Add tests for the range mode which will be added in a later version.
      */
+    it('dummy test', fakeAsync(() => {}));
   });
 });
 

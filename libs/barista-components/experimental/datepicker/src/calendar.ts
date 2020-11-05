@@ -29,6 +29,8 @@ import { DtDateAdapter } from '@dynatrace/barista-components/core';
 import { getValidDateOrNull } from './datepicker-utils/util';
 import { DtCalendarBody } from './calendar-body';
 
+let uniqueId = 0;
+
 @Component({
   selector: 'dt-calendar',
   templateUrl: 'calendar.html',
@@ -102,6 +104,9 @@ export class DtCalendar<D> implements AfterContentInit {
   private _activeDate: D;
 
   _label = '';
+
+  /** Unique id used for the aria-label. */
+  _labelid = `dt-calendar-label-${uniqueId++}`;
 
   @ViewChild(DtCalendarBody) _calendarBody: DtCalendarBody<D>;
 

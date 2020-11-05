@@ -153,10 +153,8 @@ describe('DtTimeInput', () => {
         flush();
         fixture.detectChanges();
         tick();
-        expect(component.timeInput.hour).not.toBe('-');
-        expect(hourEl.value).not.toBe('-');
-        expect(component.timeInput.minute).not.toBe('-');
-        expect(minuteEl.value).not.toBe('-');
+        expect(hourEl.value).not.toBe('+');
+        expect(minuteEl.value).not.toBe('+');
       }));
 
       it("should not allow typing in the '-' character", fakeAsync(() => {
@@ -167,9 +165,7 @@ describe('DtTimeInput', () => {
         flush();
         fixture.detectChanges();
         tick();
-        expect(component.timeInput.hour).not.toBe('-');
         expect(hourEl.value).not.toBe('-');
-        expect(component.timeInput.minute).not.toBe('-');
         expect(minuteEl.value).not.toBe('-');
       }));
 
@@ -181,10 +177,8 @@ describe('DtTimeInput', () => {
         flush();
         fixture.detectChanges();
         tick();
-        expect(component.timeInput.hour).not.toBe('-');
-        expect(hourEl.value).not.toBe('-');
-        expect(component.timeInput.minute).not.toBe('-');
-        expect(minuteEl.value).not.toBe('-');
+        expect(hourEl.value).not.toBe('.');
+        expect(minuteEl.value).not.toBe('.');
       }));
 
       it('should allow typing numbers/number-like strings', fakeAsync(() => {
