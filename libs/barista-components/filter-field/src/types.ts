@@ -59,6 +59,7 @@ export interface DtFreeTextDef<S = unknown> {
   suggestions: DtNodeDef<S>[];
   validators: DtFilterFieldValidator[];
   unique: boolean;
+  defaultSearch?: boolean;
 }
 
 export interface DtMultiSelectDef<MOpt = unknown, Opr = unknown> {
@@ -202,7 +203,13 @@ export function dtAutocompleteDef<D = unknown, OG = unknown, Op = unknown>(
 ): DtNodeDef<D> & { autocomplete: DtAutocompleteDef<OG, Op> } {
   const def = {
     ...nodeDef(data, existingNodeDef),
-    autocomplete: { optionsOrGroups, distinct, async, partial, operators: [] },
+    autocomplete: {
+      optionsOrGroups,
+      distinct,
+      async,
+      partial,
+      operators: [],
+    },
   };
   def.nodeFlags |= DtNodeFlags.TypeAutocomplete;
   return def;
@@ -302,10 +309,11 @@ export function dtFreeTextDef<D = unknown, S = unknown>(
   suggestions: DtNodeDef<S>[],
   validators: DtFilterFieldValidator[],
   unique: boolean,
+  defaultSearch: boolean = false,
 ): DtNodeDef<D> & { freeText: DtFreeTextDef<S> } {
   const def = {
     ...nodeDef<D>(data, existingNodeDef),
-    freeText: { suggestions, validators, unique },
+    freeText: { suggestions, validators, unique, defaultSearch },
   };
   def.nodeFlags |= DtNodeFlags.TypeFreeText;
   return def;

@@ -65,6 +65,7 @@ import {
   isDefined,
   _readKeyCode,
 } from '@dynatrace/barista-components/core';
+import { cloneDeep } from 'lodash-es';
 import {
   fromEvent,
   merge,
@@ -113,6 +114,7 @@ import {
   filterAutocompleteDef,
   filterFreeTextDef,
   filterMultiSelectDef,
+  findDefaultSearch,
   findFilterValuesForSources,
   isDtAutocompleteValueEqual,
   isDtFreeTextValueEqual,
@@ -124,6 +126,7 @@ import {
   DtAutocompleteValue,
   DtFilterFieldTagData,
   DtFilterValue,
+  DtFreeTextDef,
   DtNodeDef,
   DtOptionDef,
   isAsyncDtAutocompleteDef,
@@ -217,7 +220,6 @@ export class DtFilterField<T = any>
     if (value !== null) {
       this.tagValuesParser = value;
     }
-
     this._updateTagData();
     this._changeDetectorRef.markForCheck();
   }
@@ -417,6 +419,14 @@ export class DtFilterField<T = any>
 
   /** Holds all tagdata including the data for a tag that might be edited */
   tagData: DtFilterFieldTagData[] = [];
+
+  /** @internal Holds the default search node */
+  _defaultSearchDef:
+    | (DtNodeDef<unknown> & {
+        freeText: DtFreeTextDef<unknown>;
+        option: DtOptionDef;
+      })
+    | null = null;
 
   /**
    * @internal
@@ -643,6 +653,7 @@ export class DtFilterField<T = any>
       .subscribe(() => {
         this._currentTags.next(this._tags.toArray());
       });
+    this._updateDefaultSearchDef();
   }
 
   ngOnDestroy(): void {
@@ -712,6 +723,7 @@ export class DtFilterField<T = any>
     const value = this._inputEl.nativeElement.value;
     this._writeControlValue(value);
     this._updateAutocompleteOptionsOrGroups();
+    this._updateDefaultSearchDef();
     this.inputChange.emit(value);
 
     this._validateInput();
@@ -812,6 +824,7 @@ export class DtFilterField<T = any>
         this._updateLoading();
         this._updateAutocompleteOptionsOrGroups();
         this._updateMultiSelectOptionsOrGroups();
+        this._updateDefaultSearchDef();
         // If the currently edited part is a range it should pre-fill the
         // previously set values.
         if (removed.length === 1) {
@@ -1029,11 +1042,11 @@ export class DtFilterField<T = any>
   ): void {
     const optionDef = event.option.value as DtAutocompleteValue<T>;
     this._peekCurrentFilterValues().push(optionDef);
-    // Reset input value to empty string after handling the value provided by the autocomplete.
-    // Otherwise the value of the autocomplete would be in the input elements and the next options
-    // would be filtered by the input value
-    this._writeInputValue('');
-    if (
+    if (optionDef.freeText?.defaultSearch) {
+      this._writeInputValue(this._inputValue);
+      this._handleFreeTextSubmitted();
+      this._switchToRootDef(true);
+    } else if (
       isDtAutocompleteDef(optionDef) ||
       isDtFreeTextDef(optionDef) ||
       isDtRangeDef(optionDef) ||
@@ -1044,10 +1057,15 @@ export class DtFilterField<T = any>
       this._updateLoading();
       this._updateFilterByLabel();
       this._updateAutocompleteOptionsOrGroups();
+      this._updateDefaultSearchDef();
       this._emitCurrentFilterChanges([optionDef], []);
     } else {
       this._switchToRootDef(true);
     }
+    // Reset input value to empty string after handling the value provided by the autocomplete.
+    // Otherwise the value of the autocomplete would be in the input elements and the next options
+    // would be filtered by the input value
+    this._writeInputValue('');
 
     // Clear any previous selected option.
     this._autocomplete._options.forEach((option) => {
@@ -1080,7 +1098,10 @@ export class DtFilterField<T = any>
     this._changeDetectorRef.markForCheck();
   }
 
-  /** @internal */
+  /**
+   * @internal Handles submitting the range field.
+   * Usually called when the user hits enter on the input field when a range filter is set
+   */
   _handleRangeSubmitted(event: DtFilterFieldRangeSubmittedEvent): void {
     this._peekCurrentFilterValues().push({
       operator: event.operator,
@@ -1099,7 +1120,10 @@ export class DtFilterField<T = any>
     this._changeDetectorRef.markForCheck();
   }
 
-  /** @internal */
+  /**
+   * @internal Handles submitting the multiselect field.
+   * Usually called when the user hits enter on the input field when a multiselect filter is set
+   */
   _handleMultiSelectSubmitted(
     event: DtFilterFieldMultiSelectSubmittedEvent<T>,
   ): void {
@@ -1179,6 +1203,7 @@ export class DtFilterField<T = any>
         this._updateTagData();
         this._updateAutocompleteOptionsOrGroups();
         this._updateMultiSelectOptionsOrGroups();
+        this._updateDefaultSearchDef();
         this._emitFilterChanges([], removedFilters);
       }
       this._resetEditMode();
@@ -1310,6 +1335,7 @@ export class DtFilterField<T = any>
           this._updateControl();
           this._updateLoading();
           this._updateAutocompleteOptionsOrGroups();
+          this._updateDefaultSearchDef();
           this._stateChanges.next();
           this._changeDetectorRef.markForCheck();
         },
@@ -1331,6 +1357,7 @@ export class DtFilterField<T = any>
     this._updateControl();
     this._updateLoading();
     this._updateAutocompleteOptionsOrGroups();
+    this._updateDefaultSearchDef();
     const currentFilterValues = this._currentFilterValues;
     this._currentFilterValues = [];
     if (shouldEmit && currentFilterValues.length) {
@@ -1348,6 +1375,10 @@ export class DtFilterField<T = any>
       this._control = new DtFilterFieldControl(
         this._currentDef.freeText.validators,
       );
+    } else if (this._defaultSearchDef) {
+      this._control = new DtFilterFieldControl(
+        this._defaultSearchDef.freeText.validators,
+      );
     } else {
       this._control = null;
       this._errors = [];
@@ -1359,6 +1390,9 @@ export class DtFilterField<T = any>
     if (this._rootDef) {
       const splitIndex = this._filters.indexOf(this._currentFilterValues);
       const tags = this._filters.map((values, i) => {
+        if (this._defaultSearchDef && values.length === 1) {
+          values.unshift(this._defaultSearchDef);
+        }
         let prevData: DtFilterFieldTagData | undefined;
         if (this.tagData.length) {
           prevData = this.tagData[i];
@@ -1374,7 +1408,6 @@ export class DtFilterField<T = any>
         );
       });
       this.tagData = tags;
-
       this._prefixTagData = this.tagData
         .slice(0, this._currentFilterValues.length ? splitIndex : undefined)
         .filter((tag: DtFilterFieldTagData | null) => tag !== null);
@@ -1389,7 +1422,20 @@ export class DtFilterField<T = any>
 
   /** Updates the list of options or groups displayed in the autocomplete overlay */
   private _updateAutocompleteOptionsOrGroups(): void {
-    const currentDef = this._currentDef;
+    // In order to only display non defaultSearchDef's by filtering, we need to clone deep here.
+    const currentDef = cloneDeep(this._currentDef);
+
+    if (
+      currentDef &&
+      currentDef.autocomplete &&
+      currentDef.autocomplete.optionsOrGroups
+    ) {
+      currentDef.autocomplete.optionsOrGroups = currentDef?.autocomplete?.optionsOrGroups.filter(
+        (optionOrGroup) => !optionOrGroup.freeText?.defaultSearch,
+      );
+    }
+
+    let autocompleteOptionsOrGroups: DtNodeDef<unknown>[] = [];
 
     if (
       isDtAutocompleteDef(currentDef) &&
@@ -1400,14 +1446,36 @@ export class DtFilterField<T = any>
         this._getSelectedOptionIds(),
         this._inputValue,
       );
-      this._autocompleteOptionsOrGroups = def
+      autocompleteOptionsOrGroups = def
         ? def.autocomplete!.optionsOrGroups
         : [];
     } else if (isDtFreeTextDef(currentDef)) {
       const def = filterFreeTextDef(currentDef, this._inputValue);
-      this._autocompleteOptionsOrGroups = def ? def.freeText!.suggestions : [];
+      autocompleteOptionsOrGroups = def ? def.freeText!.suggestions : [];
     } else {
-      this._autocompleteOptionsOrGroups = [];
+      autocompleteOptionsOrGroups = [];
+    }
+    this._autocompleteOptionsOrGroups = autocompleteOptionsOrGroups;
+  }
+
+  /** Updates the _defaultDearchDef member */
+  private _updateDefaultSearchDef(): void {
+    const currentDef = this._currentDef;
+
+    if (
+      isDtAutocompleteDef(currentDef) &&
+      !isAsyncDtAutocompleteDef(currentDef) &&
+      this._inputValue.length
+    ) {
+      if (this._defaultSearchDef === null) {
+        this._defaultSearchDef = findDefaultSearch(currentDef);
+        this._updateControl();
+        this._writeControlValue(this._inputValue);
+      } else {
+        this._defaultSearchDef = findDefaultSearch(currentDef);
+      }
+    } else {
+      this._defaultSearchDef = null;
     }
   }
 

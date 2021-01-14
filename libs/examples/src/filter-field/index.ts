@@ -18,6 +18,7 @@ export * from './filter-field-async-example/filter-field-async-example';
 export * from './filter-field-clearall-example/filter-field-clearall-example';
 export * from './filter-field-custom-parser-example/filter-field-custom-parser-example';
 export * from './filter-field-default-example/filter-field-default-example';
+export * from './filter-field-default-search-example/filter-field-default-search-example';
 export * from './filter-field-disabled-example/filter-field-disabled-example';
 export * from './filter-field-distinct-example/filter-field-distinct-example';
 export * from './filter-field-examples.module';

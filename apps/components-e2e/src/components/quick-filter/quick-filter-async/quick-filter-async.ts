@@ -68,7 +68,24 @@ export class DtE2EQuickFilterAsync {
       DtQuickFilterDefaultDataSourceType
     >,
   ): void {
-    if (event.added[0] === filterFieldData.autocomplete[0]) {
+    // If we don't compare the name attributes instead of
+    // event.added[0] === filterFieldData.autocomplete[0] the expression's never true
+    // causing the e2e test to fail.
+    if (
+      (event.added[0] as
+        | {
+            name: string;
+            async: boolean;
+            autocomplete: never[];
+          }
+        | {
+            name: string;
+            autocomplete: {
+              name: string;
+            }[];
+            async?: undefined;
+          }).name === filterFieldData.autocomplete[0].name
+    ) {
       setTimeout(() => {
         this._dataSource.data = asyncData;
       }, 1000);
