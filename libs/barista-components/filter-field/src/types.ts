@@ -35,6 +35,11 @@ export enum DtNodeFlags {
     TypeMultiSelect,
 }
 
+export interface DefaultSearchOption<T> {
+  defaultSearchDef: DtAutocompleteValue<T>;
+  inputValue: string;
+}
+
 export interface DtNodeDef<D = unknown> {
   nodeFlags: DtNodeFlags;
   autocomplete: DtAutocompleteDef | null;
@@ -190,6 +195,13 @@ export function isAsyncDtMultiSelectDef<D>(
   option: DtOptionDef;
 } {
   return !!(isDtMultiSelectDef<D>(def) && isDtOptionDef<D>(def));
+}
+
+/** Whether the provided def object is an object and consists of a DefaultSearchDef */
+export function isDefaultSearchOption<T>(
+  option: any,
+): option is DefaultSearchOption<T> {
+  return isObject(option) && isDtAutocompleteValue(option.defaultSearchDef);
 }
 
 /** Creates a new DtAutocompleteDef onto a provided existing NodeDef or a newly created one. */

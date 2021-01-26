@@ -65,7 +65,6 @@ import {
   isDefined,
   _readKeyCode,
 } from '@dynatrace/barista-components/core';
-import { cloneDeep } from 'lodash-es';
 import {
   fromEvent,
   merge,
@@ -123,6 +122,7 @@ import {
 } from './filter-field-util';
 import { DtFilterFieldControl } from './filter-field-validation';
 import {
+  DefaultSearchOption,
   DtAutocompleteValue,
   DtFilterFieldTagData,
   DtFilterValue,
@@ -131,6 +131,7 @@ import {
   DtOptionDef,
   isAsyncDtAutocompleteDef,
   isAsyncDtMultiSelectDef,
+  isDefaultSearchOption,
   isDtAutocompleteDef,
   isDtAutocompleteValue,
   isDtFreeTextDef,
@@ -1040,26 +1041,30 @@ export class DtFilterField<T = any>
   private _handleAutocompleteSelected(
     event: DtAutocompleteSelectedEvent<DtNodeDef>,
   ): void {
-    const optionDef = event.option.value as DtAutocompleteValue<T>;
-    this._peekCurrentFilterValues().push(optionDef);
-    if (optionDef.freeText?.defaultSearch) {
-      this._writeInputValue(this._inputValue);
+    const submittedOption = event.option.value as
+      | DtAutocompleteValue<T>
+      | DefaultSearchOption<T>;
+    if (isDefaultSearchOption(submittedOption)) {
+      this._peekCurrentFilterValues().push(submittedOption.defaultSearchDef);
+      this._writeInputValue(submittedOption.inputValue);
       this._handleFreeTextSubmitted();
       this._switchToRootDef(true);
     } else if (
-      isDtAutocompleteDef(optionDef) ||
-      isDtFreeTextDef(optionDef) ||
-      isDtRangeDef(optionDef) ||
-      isDtMultiSelectDef(optionDef)
+      isDtAutocompleteDef(submittedOption) ||
+      isDtFreeTextDef(submittedOption) ||
+      isDtRangeDef(submittedOption) ||
+      isDtMultiSelectDef(submittedOption)
     ) {
-      this._currentDef = optionDef;
+      this._peekCurrentFilterValues().push(submittedOption);
+      this._currentDef = submittedOption;
       this._updateControl();
       this._updateLoading();
       this._updateFilterByLabel();
       this._updateAutocompleteOptionsOrGroups();
       this._updateDefaultSearchDef();
-      this._emitCurrentFilterChanges([optionDef], []);
+      this._emitCurrentFilterChanges([submittedOption], []);
     } else {
+      this._peekCurrentFilterValues().push(submittedOption);
       this._switchToRootDef(true);
     }
     // Reset input value to empty string after handling the value provided by the autocomplete.
@@ -1422,20 +1427,7 @@ export class DtFilterField<T = any>
 
   /** Updates the list of options or groups displayed in the autocomplete overlay */
   private _updateAutocompleteOptionsOrGroups(): void {
-    // In order to only display non defaultSearchDef's by filtering, we need to clone deep here.
-    const currentDef = cloneDeep(this._currentDef);
-
-    if (
-      currentDef &&
-      currentDef.autocomplete &&
-      currentDef.autocomplete.optionsOrGroups
-    ) {
-      currentDef.autocomplete.optionsOrGroups = currentDef?.autocomplete?.optionsOrGroups.filter(
-        (optionOrGroup) => !optionOrGroup.freeText?.defaultSearch,
-      );
-    }
-
-    let autocompleteOptionsOrGroups: DtNodeDef<unknown>[] = [];
+    const currentDef = this._currentDef;
 
     if (
       isDtAutocompleteDef(currentDef) &&
@@ -1446,16 +1438,15 @@ export class DtFilterField<T = any>
         this._getSelectedOptionIds(),
         this._inputValue,
       );
-      autocompleteOptionsOrGroups = def
+      this._autocompleteOptionsOrGroups = def
         ? def.autocomplete!.optionsOrGroups
         : [];
     } else if (isDtFreeTextDef(currentDef)) {
       const def = filterFreeTextDef(currentDef, this._inputValue);
-      autocompleteOptionsOrGroups = def ? def.freeText!.suggestions : [];
+      this._autocompleteOptionsOrGroups = def ? def.freeText!.suggestions : [];
     } else {
-      autocompleteOptionsOrGroups = [];
+      this._autocompleteOptionsOrGroups = [];
     }
-    this._autocompleteOptionsOrGroups = autocompleteOptionsOrGroups;
   }
 
   /** Updates the _defaultDearchDef member */

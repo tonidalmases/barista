@@ -61,13 +61,21 @@
       panelWidth="400px"
       class="dt-filter-field-panel"
     >
-      <ng-container *ngIf="_defaultSearchDef">
-        <dt-option [value]="_defaultSearchDef">
+      <ng-container *ngIf="_defaultSearchDef && _inputValue">
+        <dt-option
+          [value]="{
+            defaultSearchDef: _defaultSearchDef,
+            inputValue: _inputValue
+          }"
+        >
           {{ _defaultSearchDef.option!.viewValue }}: {{ _inputValue }}
         </dt-option>
         <dt-option
           *ngFor="let suggestionsDef of _defaultSearchDef.freeText.suggestions"
-          [value]="suggestionsDef"
+          [value]="{
+            defaultSearchDef: _defaultSearchDef,
+            inputValue: suggestionsDef.option!.viewValue
+          }"
           [attr.title]="_getTitle(_defaultSearchDef.option)"
         >
           {{ _defaultSearchDef.option!.viewValue }}:
